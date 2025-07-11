@@ -1,0 +1,126 @@
+{% extends "layout.html" %}
+{%load crispy_forms_tags%}
+   {%block title%} University Registration{%endblock title%}
+   {%block style%}
+   .help-block, .helptext, .form-text {display: none !important;}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: auto;
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        /* 3D Tickets and Party Effects Animation */
+        .item {
+            position: absolute;
+            animation: move 12s infinite linear;
+            transform-style: preserve-3d;
+        }
+        .ticket {
+            width: 100px;
+            height: 50px;
+            background: linear-gradient(45deg, #ffd700, #ff4500);
+            border: 2px dashed #fff;
+            transform: rotateX(20deg) rotateY(30deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: hsl(var(--hue), 80%, 60%);
+            border-radius: 50%;
+            animation: fall 5s infinite linear;
+            transform-style: preserve-3d;
+        }
+        @keyframes move {
+            0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+            25% { transform: translate3d(60vw, 40vh, 100px) rotate(90deg); }
+            50% { transform: translate3d(100vw, 0, 50px) rotate(180deg); }
+            75% { transform: translate3d(40vw, 100vh, 0px) rotate(270deg); }
+            100% { transform: translate3d(0, 0, 0) rotate(360deg); }
+        }
+        @keyframes fall {
+            0% { transform: translate3d(0, -20px, 0) rotate(0deg); }
+            100% { transform: translate3d(var(--x), 100vh, var(--z)) rotate(360deg); }
+        }
+        /* Positioning Tickets */
+        .item1 { top: 10%; left: 5%; animation-delay: 0s; }
+        .item2 { top: 25%; right: 10%; animation-delay: 2s; }
+        .item3 { top: 50%; left: 15%; animation-delay: 4s; }
+        .item4 { bottom: 20%; right: 5%; animation-delay: 6s; }
+        .item5 { bottom: 10%; left: 25%; animation-delay: 8s; }
+        /* Confetti Effects */
+        .confetti1 { --hue: 0; --x: 10vw; --z: 50px; top: 5%; left: 5%; animation-delay: 0s; }
+        .confetti2 { --hue: 120; --x: 80vw; --z: 30px; top: 15%; right: 10%; animation-delay: 1s; }
+        .confetti3 { --hue: 240; --x: 20vw; --z: 70px; bottom: 25%; left: 20%; animation-delay: 2s; }
+        .confetti4 { --hue: 60; --x: 90vw; --z: 40px; top: 40%; right: 5%; animation-delay: 3s; }
+        .confetti5 { --hue: 300; --x: 30vw; --z: 60px; bottom: 10%; left: 15%; animation-delay: 4s; }
+    </style>
+    {%endblock style%}
+{%block content%}
+    
+<div class="form-container mt-20">
+  <h1 class="text-3xl font-bold text-center mb-6" style="color: rgb(34, 139, 230);">University Registration Form</h1>
+     {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} mt-3" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+    <form class="space-y-6" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-section">
+        {{ user_form|crispy }}
+      </div>
+      <div class="form-section">
+        {{ uni_form|crispy }}
+      </div>
+      <!-- Submit Button -->
+      <div class="text-center mt-4">
+        <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-md hover:bg-blue-700 transition duration-200 shadow">Submit Application</button>
+      </div>
+    </form>
+    <p class="text-center text-sm text-gray-500 mt-6">Thank you for applying to our Website. We will review your application and then send you a confirmation email with required credentials.</p>
+</div>
+    <div class="item item1 ticket">Admission Ticket</div>
+    <div class="item item2 ticket">Welcome Pass</div>
+    <div class="item item3 ticket">Student ID</div>
+    <div class="item item4 ticket">Event Pass</div>
+    <div class="item item5 ticket">Orientation</div>
+    <div class="confetti confetti1"></div>
+    <div class="confetti confetti2"></div>
+    <div class="confetti confetti3"></div>
+    <div class="confetti confetti4"></div>
+    <div class="confetti confetti5"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{%endblock%}
