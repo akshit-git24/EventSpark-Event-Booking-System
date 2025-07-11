@@ -89,22 +89,31 @@
 {%block content%}
     
 <div class="form-container mt-20">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} mt-3" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
   <h1 class="text-3xl font-bold text-center mb-6" style="color: rgb(34, 139, 230);">University Registration Form</h1>
-     {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} mt-3" role="alert">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+    {% if user_form.errors %}
+      <div class="alert alert-danger">{{ user_form.errors }}</div>
+    {% endif %}
+    {% if uni_form.errors %}
+      <div class="alert alert-danger">{{ uni_form.errors }}</div>
+    {% endif %}
+    
     <form class="space-y-6" method="post" enctype="multipart/form-data">
       {% csrf_token %}
-      <div class="form-section">
-        {{ user_form|crispy }}
-      </div>
-      <div class="form-section">
-        {{ uni_form|crispy }}
-      </div>
+        <div class="form-section" style="background:rgba(255,255,255,0.08); border:1.5px solid #e0e7ef; border-radius:8px; padding:1.5rem 1.2rem; margin-bottom:2rem;">
+            <h2 style="color:#2563eb; font-size:1.3rem; font-weight:600; margin-bottom:1rem;">User Account Details</h2>
+            {{ user_form|crispy }}
+        </div>
+        <div class="form-section" style="background:rgba(255,255,255,0.08); border:1.5px solid #e0e7ef; border-radius:8px; padding:1.5rem 1.2rem;">
+            <h2 style="color:#2563eb; font-size:1.3rem; font-weight:600; margin-bottom:1rem;">University Details</h2>
+            {{ uni_form|crispy }}
+        </div>
       <!-- Submit Button -->
       <div class="text-center mt-4">
         <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-md hover:bg-blue-700 transition duration-200 shadow">Submit Application</button>

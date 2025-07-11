@@ -11,7 +11,7 @@ def homepage(request):
 def UniversityRegister(request):
     if request.method == "POST":
         user_form = UserRegistrationForm(request.POST)
-        uni_form = UniversityRegistrationForm(request.POST)
+        uni_form = UniversityRegistrationForm(request.POST, request.FILES)
         if user_form.is_valid() and uni_form.is_valid():
             user = user_form.save()    
             used_numbers = set(University.objects.values_list('uni_id', flat=True))
