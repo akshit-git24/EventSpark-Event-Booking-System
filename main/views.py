@@ -26,7 +26,7 @@ def UniversityRegister(request):
             university.uni_id = num
             university.save()
             messages.success(request, 'University registered successfully! Waiting for admin approval.')
-            return render(request, 'UniDashboard.html')
+            return render(request, 'pending_uni.html')
         else:
             print("user_form errors:", user_form.errors)
             print("uni_form errors:", uni_form.errors)
@@ -36,4 +36,19 @@ def UniversityRegister(request):
         uni_form = UniversityRegistrationForm()
     context = {'user_form': user_form, 'uni_form': uni_form}
     return render(request, 'university.html', context)     
+
+def pending_approval_university(request):
+    University=University.objects.filter(user=request.user)
+    if not(University.is_approved):
+       return render(request,'pending_uni.html')
+    
+def custom_login(request):
+    return render(request,'customlog.html')
+def loginstudent(request):
+    return render(request,'login.html')
+
+
+
+
+# def loginUniversity(request):
 

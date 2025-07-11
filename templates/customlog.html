@@ -1,0 +1,339 @@
+{% extends "layout.html" %}
+{%load crispy_forms_tags%}
+   {%block title%}Staff login{%endblock title%}
+   {%block style%}
+    * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: #f0f4f8 url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"%3E%3Cg fill="%23dfe6e9" fill-opacity="0.2"%3E%3Cpath d="M0 40L40 0H20L0 20z"/%3E%3C/g%3E%3C/svg%3E');
+            min-height: 100vh;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background Slideshow */
+        .background-slideshow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .background-slideshow div {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            animation: slideshow 15s infinite;
+        }
+
+        .background-slideshow div:nth-child(1) {
+            background-image: url('https://images.unsplash.com/photo-1530103862295-9a29b09e3b36?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            animation-delay: 0s;
+        }
+
+        .background-slideshow div:nth-child(2) {
+            background-image: url('https://images.unsplash.com/photo-1517457373958-b7bdd7f8d05e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            animation-delay: 5s;
+        }
+
+        .background-slideshow div:nth-child(3) {
+            background-image: url('https://images.unsplash.com/photo-1563911593803-6c7892d80f0a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            animation-delay: 10s;
+        }
+
+        @keyframes slideshow {
+            0% { opacity: 0; }
+            10% { opacity: 0.5; }
+            33% { opacity: 0.5; }
+            43% { opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        /* Subtle Overlay for Readability */
+        .background-slideshow::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(240, 244, 248, 0.6);
+            z-index: 0;
+        }
+
+        /* Staff Badge Overlay */
+        .staff-overlay {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 1;
+        }
+
+        .staff-overlay .badge {
+            width: 80px;
+            height: 80px;
+            background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2300b7eb"%3E%3Cpath d="M12 2a5 5 0 0 1 5 5v3h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v3h6V7a3 3 0 0 0-3-3zm-7 8v8h14v-8H5zm7 2a2 2 0 0 1 2 2v2a2 2 0 0 1-4 0v-2a2 2 0 0 1 2-2z"/%3E%3C/svg%3E') no-repeat center;
+            background-size: contain;
+            margin: 0 auto 10px;
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        .staff-overlay h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            font-weight: 700;
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typewriter 3s steps(30) infinite;
+        }
+
+        @keyframes typewriter {
+            0% { width: 0; }
+            50% { width: 100%; }
+            100% { width: 0; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 100px auto 0;
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .registration-section {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            flex: 1;
+            min-width: 250px;
+            max-width: 320px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(0, 183, 235, 0.2);
+        }
+
+        .registration-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .registration-section h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #34495e;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dfe6e9;
+            border-radius: 5px;
+            font-size: 14px;
+            background: #f9f9f9;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #00b7eb;
+            box-shadow: 0 0 5px rgba(0, 183, 235, 0.5);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #00b7eb, #ff6f61);
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 183, 235, 0.5);
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 10%, transparent 50%);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.5s ease;
+        }
+
+        .submit-btn:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .registration-section {
+                flex: 1 1 45%;
+                max-width: 45%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .registration-section {
+                max-width: 100%;
+                min-width: 100%;
+            }
+        }
+   {%endblock style%}
+
+   {%block content%}
+
+><div class="background-slideshow">
+        <div>Hello</div>
+        <div></div>
+        <div></div>
+    </div>
+    <div class="staff-overlay">
+        <div class="badge"></div>
+        <h1>Staff Access Portal</h1>
+    </div>
+    <div class="container">
+        <!-- Individual Registration -->
+        <div class="registration-section">
+            <h2>Individual Staff Login</h2>
+            <form>
+                <div class="form-group">
+                    <label for="ind-name">Full Name</label>
+                    <input type="text" id="ind-name" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="ind-email">Staff Email</label>
+                    <input type="email" id="ind-email" placeholder="Enter your staff email" required>
+                </div>
+                <div class="form-group">
+                    <label for="ind-id">Employee ID</label>
+                    <input type="text" id="ind-id" placeholder="Enter your employee ID" required>
+                </div>
+                <button type="submit" class="submit-btn">Login</button>
+            </form>
+        </div>
+
+        <!-- Team Registration -->
+        <div class="registration-section">
+            <h2>Team Staff Login</h2>
+            <form>
+                <div class="form-group">
+                    <label for="team-name">Team Name</label>
+                    <input type="text" id="team-name" placeholder="Enter team name" required>
+                </div>
+                <div class="form-group">
+                    <label for="team-leader">Team Leader</label>
+                    <input type="text" id="team-leader" placeholder="Enter leader's name" required>
+                </div>
+                <div class="form-group">
+                    <label for="team-id">Team ID</label>
+                    <input type="text" id="team-id" placeholder="Enter team ID" required>
+                </div>
+                <button type="submit" class="submit-btn">Login</button>
+            </form>
+        </div>
+
+        <!-- Organization Registration -->
+        <div class="registration-section">
+            <h2>Organization Staff Login</h2>
+            <form>
+                <div class="form-group">
+                    <label for="org-name">Department Name</label>
+                    <input type="text" id="org-name" placeholder="Enter department name" required>
+                </div>
+                <div class="form-group">
+                    <label for="org-contact">Contact Person</label>
+                    <input type="text" id="org-contact" placeholder="Enter contact person's name" required>
+                </div>
+                <div class="form-group">
+                    <label for="org-email">Department Email</label>
+                    <input type="email" id="org-email" placeholder="Enter department email" required>
+                </div>
+                <button type="submit" class="submit-btn">Login</button>
+            </form>
+        </div>
+
+        <!-- Guest Registration -->
+        <div class="registration-section">
+            <h2>Guest Staff Login</h2>
+            <form>
+                <div class="form-group">
+                    <label for="guest-name">Full Name</label>
+                    <input type="text" id="guest-name" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="guest-affiliation">Affiliation</label>
+                    <input type="text" id="guest-affiliation" placeholder="Enter your affiliation (if any)">
+                </div>
+                <div class="form-group">
+                    <label for="guest-access">Access Code</label>
+                    <input type="text" id="guest-access" placeholder="Enter temporary access code" required>
+                </div>
+                <button type="submit" class="submit-btn">Login</button>
+            </form>
+        </div>
+    </div>
+
+   {%endblock%}
