@@ -89,13 +89,13 @@
 {%block content%}
     
 <div class="form-container mt-20">
-    {% if messages %}
+    {% comment %} {% if messages %}
         {% for message in messages %}
             <div class="alert alert-{{ message.tags }} mt-3" role="alert">
                 {{ message }}
             </div>
         {% endfor %}
-    {% endif %}
+    {% endif %} {% endcomment %}
   <h1 class="text-3xl font-bold text-center mb-6" style="color: rgb(34, 139, 230);">University Registration Form</h1>
     {% if user_form.errors %}
       <div class="alert alert-danger">{{ user_form.errors }}</div>

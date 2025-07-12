@@ -3,76 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>University Registration</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96c93d);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            padding-top: 20px;
-            height: 100vh;
-            margin: 0;
-        }
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .form-container {
-            max-width: 600px;
-            margin: auto;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .form-group label {
-            font-weight: bold;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
-        }
-    </style>
+    <title>University Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} mt-3" role="alert">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
-    <div class="form-container">
-        <h2 class="text-center mb-4">University Registration</h2>
-        <form method="POST">
-            {% csrf_token %}
-            <div class="form-group mb-3">
-                <label for="id_user">User Details</label>
-                {{ user_form.as_p }}
-            </div>
-            <div class="form-group mb-3">
-                <label for="id_university">University Details</label>
-                {{ uni_form.as_p }}
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Register</button>
-           {% if user_form.errors %}
-                <div class="alert alert-danger">
-                    {{ user_form.errors }}
+<body class="bg-gradient-to-br from-blue-100 via-indigo-50 to-gray-100 font-sans">
+    <!-- Space for Navbar (70px height reserved) -->
+    <div class="h-[70px]"></div>
+
+    <div class="flex min-h-[calc(100vh-70px)]">
+        <!-- Sidebar (Left, equal width, split into student and scrollable staff sections) -->
+        <aside class="w-1/2 bg-gradient-to-b from-blue-50 to-white shadow-xl p-8 flex flex-col">
+            <!-- Student Profile Section (Fixed) -->
+            <div class="flex-shrink-0 flex items-center justify-center mb-8">
+                <div class="bg-white rounded-2xl shadow-lg p-6 w-80 transform hover:scale-105 transition-transform duration-300">
+                    <!-- Profile Photo -->
+                    <div class="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 ring-4 ring-blue-200">
+                        <img src="https://via.placeholder.com/150" alt="Profile Photo" class="w-full h-full object-cover">
+                    </div>
+                    <!-- Student Details -->
+                    <h2 class="text-2xl font-bold text-gray-800 text-center">John Doe</h2>
+                    <p class="text-gray-600 text-center">Student ID: 123456</p>
+                    <p class="text-gray-600 text-center">Computer Science</p>
+                    <p class="text-gray-600 text-center">Year: Junior</p>
+                    <!-- Edit Profile Button -->
+                    <button class="mt-6 w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Edit Profile</button>
                 </div>
-                {% endif %}
-                {% if uni_form.errors %}
-                <div class="alert alert-danger">
-                    {{ uni_form.errors }}
+            </div>
+
+            <!-- Staff Details Section (Scrollable) -->
+            <div class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-indigo-300 scrollbar-track-blue-50">
+                <div class="space-y-6 pr-2">
+                    <!-- Staff Profile 1 -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6 w-80 mx-auto transform hover:scale-105 transition-transform duration-300">
+                        <div class="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 ring-4 ring-indigo-200">
+                            <img src="https://via.placeholder.com/150" alt="Staff Photo" class="w-full h-full object-cover">
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800 text-center">Dr. Jane Smith</h2>
+                        <p class="text-gray-600 text-center">Role: Professor</p>
+                        <p class="text-gray-600 text-center">Department: Computer Science</p>
+                        <button class="mt-6 w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 transform hover:-translate-y-1">Contact Staff</button>
+                    </div>
+                    <!-- Staff Profile 2 -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6 w-80 mx-auto transform hover:scale-105 transition-transform duration-300">
+                        <div class="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 ring-4 ring-indigo-200">
+                            <img src="https://via.placeholder.com/150" alt="Staff Photo" class="w-full h-full object-cover">
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800 text-center">Prof. Michael Lee</h2>
+                        <p class="text-gray-600 text-center">Role: Associate Professor</p>
+                        <p class="text-gray-600 text-center">Department: Mathematics</p>
+                        <button class="mt-6 w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 transform hover:-translate-y-1">Contact Staff</button>
+                    </div>
+                    <!-- Staff Profile 3 -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6 w-80 mx-auto transform hover:scale-105 transition-transform duration-300">
+                        <div class="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 ring-4 ring-indigo-200">
+                            <img src="https://via.placeholder.com/150" alt="Staff Photo" class="w-full h-full object-cover">
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800 text-center">Dr. Emily Chen</h2>
+                        <p class="text-gray-600 text-center">Role: Lecturer</p>
+                        <p class="text-gray-600 text-center">Department: Physics</p>
+                        <button class="mt-6 w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 transform hover:-translate-y-1">Contact Staff</button>
+                    </div>
                 </div>
-                {% endif %}
-        </form>
+            </div>
+        </aside>
+
+        <!-- Main Content (Right, equal width) -->
+        <main class="w-1/2 p-8 flex items-center">
+            <div class="max-w-lg mx-auto space-y-8">
+                <!-- Upper Form Section (Academic Information) -->
+                <section class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Academic Information</h3>
+                    <form class="space-y-4">
+                        <div>
+                            <label for="major" class="block text-sm font-medium text-gray-700">Major</label>
+                            <input type="text" id="major" name="major" value="Computer Science" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all duration-300 ease-in-out transform focus:scale-105" />
+                        </div>
+                        <div>
+                            <label for="gpa" class="block text-sm font-medium text-gray-700">GPA</label>
+                            <input type="text" id="gpa" name="gpa" value="3.8" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all duration-300 ease-in-out transform focus:scale-105" />
+                        </div>
+                        <div>
+                            <label for="year" class="block text-sm font-medium text-gray-700">Year</label>
+                            <select id="year" name="year" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all duration-300 ease-in-out transform focus:scale-105">
+                                <option>Freshman</option>
+                                <option>Sophomore</option>
+                                <option selected>Junior</option>
+                                <option>Senior</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Save Changes</button>
+                    </form>
+                </section>
+
+                <!-- Lower Form Section (Personal Information) -->
+                <section class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Personal Information</h3>
+                    <form class="space-y-4">
+                        <div>
+                            <label for="full-name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                            <input type="text" id="full-name" name="full-name" value="John Doe" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all duration-300 ease-in-out transform focus:scale-105" />
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" id="email" name="email" value="john.doe@university.edu" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all duration-300 ease-in-out transform focus:scale-105" />
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                            <input type="tel" id="phone" name="phone" value="+1 (123) 456-7890" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all duration-300 ease-in-out transform focus:scale-105" />
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Save Changes</button>
+                    </form>
+                </section>
+            </div>
+        </main>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

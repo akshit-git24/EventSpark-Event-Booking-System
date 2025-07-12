@@ -16,3 +16,9 @@ class UniversityRegistrationForm(forms.ModelForm):
         fields = ['name', 'address', 'contact_email', 'contact_phone', 'uni_document']
         widgets = {'address': forms.Textarea(attrs={'rows': 3})}
 
+class UniversityLoginForm(forms.Form):
+    username = forms.CharField(label='Username', max_length=150)
+    password = forms.CharField(label='Password', widget=forms.PasswordInput)
+    uni_id = forms.CharField(label='University ID',help_text="This field is of integer type", max_length=13)
+    passkey = forms.CharField(label='University ID', max_length=20)
+
