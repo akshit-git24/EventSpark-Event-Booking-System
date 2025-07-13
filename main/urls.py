@@ -1,15 +1,20 @@
 from django.urls import path
 from . import views
 from django.shortcuts import render
-
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('',views.homepage,name='homepage'),
     path('university-register/',views.UniversityRegister,name='University-Register'),
-    path('pending-approval-university/' ,views.pending_approval_university,name='pending-approval-university'),
+    # path('pending-approval-university/' ,views.pending_approval_university,name='pending-approval-university'),
     path('login/',views.loginstudent,name='login-student'),
     path('custom-login/',views.custom_login,name='custom-login'),
     path('university-login/', views.university_login, name='university-login'),
-    path('unidashboard/', lambda request: render(request, 'UniDashboard.html'), name='UniDashboard'),
-    
+    # path('head_register/',views.Head_Register,name='Head-Register'),
+    path('delete-profile/',views.delete_profile,name='delete-profile'),
     # path('university-portal/',views.UniversityDashboard,name='University-Dashboard'),
+    path('dashboard/', views.dashboard, name='dashboard'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,13 +1,12 @@
-from django.shortcuts import render,redirect
-from .forms import UserRegistrationForm,UniversityRegistrationForm,UniversityLoginForm
+from django.shortcuts import render,redirect,get_object_or_404
+from .forms import UserRegistrationForm,UniversityRegistrationForm,UniversityLoginForm,HeadRegistrationForm
 from django.contrib import messages
-from .models import University
+from .models import University,Head,Department,EventCoordinator,Student
 from django.contrib.auth import login,logout
 import random
 import string
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.contrib.auth import authenticate
-from .forms import UniversityLoginForm
 # Create your views here.
 def homepage(request):
     return render(request,'home.html')
@@ -20,7 +19,7 @@ def UniversityRegister(request):
             user = user_form.save()    
             used_numbers = set(University.objects.values_list('uni_id', flat=True))
             while True:
-                num = random.randint(1000000000000, 9999999999999)
+                num = random.randint(1000000000000, 9999999999999)#13
                 if num not in used_numbers:
                     used_numbers.add(num)
                     print(num)
@@ -33,7 +32,7 @@ def UniversityRegister(request):
             university.passkey=password
             university.save()
             messages.success(request, 'University registered successfully! Waiting for admin approval.')
-            return render(request,'home.html')
+            return render(request,'UniDashboard.html')
         else:
             print("user_form errors:", user_form.errors)
             print("uni_form errors:", uni_form.errors)
@@ -42,22 +41,7 @@ def UniversityRegister(request):
         user_form = UserRegistrationForm()
         uni_form = UniversityRegistrationForm()
     context = {'user_form': user_form, 'uni_form': uni_form}
-    return render(request, 'university.html', context)     
-
-def pending_approval_university(request):
-    university = University.objects.filter(user=request.user)
-    if not(university.is_approved):
-       return render(request,'pending_uni.html')
-    elif university.is_approved:
-        return render(request,'UniDashboard.html')
-    else:
-        messages.error(request,"University does not exist!")
-
-def student_registration(request):
-    ...
-def custom_login(request):
-    uni_form=UniversityLoginForm()
-    return render(request,'customlog.html',{'uni_form':uni_form})
+    return render(request, 'university.html', context)    
 
 def university_login(request):
     if request.method == 'POST':
@@ -73,7 +57,7 @@ def university_login(request):
                         university = University.objects.get(user=user, uni_id=uni_id, passkey=passkey)
                         if university.is_approved:
                             login(request, user)
-                            return redirect('UniDashboard')
+                            return redirect('dashboard')
                         else:
                             messages.error(request, 'University is not approved yet.')
                     except University.DoesNotExist:
@@ -83,6 +67,94 @@ def university_login(request):
     else:
         form = UniversityLoginForm()
     return render(request, 'customlog.html', {'form': form})
+
+def university_dashboard(request,university):
+    if not university.is_approved:
+       messages.warning(request,"This University Account is pending for approval.")
+       return render(request,'pending_uni.html')
+    
+    try:
+        head_data = Head.objects.get(university=university)  
+    except:
+        head_data = None 
+        if request.method == "POST":
+            user_form = UserRegistrationForm(request.POST)
+            head_form = HeadRegistrationForm(request.POST, request.FILES)
+            if user_form.is_valid() and head_form.is_valid():
+                user = user_form.save()    
+                used_numbers = set(Head.objects.values_list('head_id', flat=True))
+                while True:
+                    num = random.randint(100000000000, 999999999999)#12
+                    if num not in used_numbers:
+                        used_numbers.add(num)
+                        print(num)
+                        break
+                chars = string.ascii_letters + string.digits
+                password = ''.join(random.choice(chars) for _ in range(13))    
+                head = head_form.save(commit=False)
+                head.user = user
+                head.head_id = num
+                head.passkey=password
+                head.university=university
+                head.save()
+                messages.success(request, 'University Event Head registered successfully!.Head can Log in now from Custom Login')
+                return render(request,'UniDashboard.html')
+            else:
+                print("user_form errors:", user_form.errors)
+                print("head_form errors:", head_form.errors)
+                messages.error(request, "Form is not valid. Enter your details accordingly!")
+        else:
+            user_form = UserRegistrationForm()
+            head_form = HeadRegistrationForm()
+        context = {'user_form': user_form, 'head_form': head_form}
+        return render(request, 'UniDashboard.html', context)                
+
+    #will add more...    
+    context = {'head_data':head_data}
+    return render(request, 'UniDashboard.html', context)     
+   
+def Head_Register(request):
+    if request.method == "POST":
+        user_form = UserRegistrationForm(request.POST)
+        head_form = HeadRegistrationForm(request.POST, request.FILES)
+        if user_form.is_valid() and head_form.is_valid():
+            user = user_form.save()    
+            used_numbers = set(Head.objects.values_list('head_id', flat=True))
+            while True:
+                num = random.randint(100000000000, 999999999999)#12
+                if num not in used_numbers:
+                    used_numbers.add(num)
+                    print(num)
+                    break
+            chars = string.ascii_letters + string.digits
+            password = ''.join(random.choice(chars) for _ in range(13))    
+            head = head_form.save(commit=False)
+            head.user = user
+            head.head_id = num
+            head.passkey=password
+            
+            head.save()
+            messages.success(request, 'University Event Head registered successfully!.Head can Log in now from Custom Login')
+            return render(request,'UniDashboard.html')
+        else:
+            print("user_form errors:", user_form.errors)
+            print("head_form errors:", head_form.errors)
+            messages.error(request, "Form is not valid. Enter your details accordingly!")
+    else:
+        user_form = UserRegistrationForm()
+        head_form = HeadRegistrationForm()
+    context = {'user_form': user_form, 'head_form': head_form}
+    return render(request, 'UniDashboard.html', context)     
+ 
+
+def student_registration(request):
+    ...
+
+def custom_login(request):
+    uni_form=UniversityLoginForm()
+    return render(request,'customlog.html',{'uni_form':uni_form})
+
+
 def Head_login(request):
     ...
 def Department_login(request):
@@ -92,5 +164,39 @@ def coordinator_login(request):
 def loginstudent(request):
     return render(request,'login.html')
 
-# def loginUniversity(request):
+@login_required
+def dashboard(request):
+    user = request.user
+    try:
+        university = University.objects.get(user=user)
+        return university_dashboard(request,university)
+    except University.DoesNotExist:
+        pass
+    # Check for Head
+    try:
+        head = Head.objects.get(user=user)
+        return render(request, 'head_dashboard.html', {'head': head})
+    except Head.DoesNotExist:
+        pass
+    # Check for Department
+    try:
+        department = Department.objects.get(user=user)
+        return render(request, 'department_dashboard.html', {'department': department})
+    except Department.DoesNotExist:
+        pass
+    # Check for EventCoordinator
+    try:
+        coordinator = EventCoordinator.objects.get(user=user)
+        return render(request, 'coordinator_dashboard.html', {'coordinator': coordinator})
+    except EventCoordinator.DoesNotExist:
+        pass
+    # If user is not found in any role
+    messages.error(request,'🛑You are not authorized to access this page!🛑')
+    return redirect('homepage')
 
+def delete_profile(request):
+    user = request.user
+    head = get_object_or_404(Head, user=user)
+    head.delete()
+    messages.success(request, 'Head account deleted successfully!')
+    return render(request,'UniDashboard.html')

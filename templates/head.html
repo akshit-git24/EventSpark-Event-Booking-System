@@ -1,11 +1,12 @@
-{% extends "layout.html" %}
-{%load crispy_forms_tags%}
-   {%block title%}University Dashboard{%endblock title%}
-   {%block style%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-   {%endblock style%}
-
-   {% block content %}
+</head>
+<body class="bg-gradient-to-br from-blue-100 via-indigo-50 to-gray-100 font-sans">
     <!-- Space for Navbar (70px height reserved) -->
     <div class="h-[70px]"></div>
 
@@ -13,31 +14,22 @@
         <!-- Sidebar (Left, equal width, split into student and scrollable staff sections) -->
         <aside class="w-1/2 bg-gradient-to-b from-blue-50 to-white shadow-xl p-8 flex flex-col">
             <!-- Student Profile Section (Fixed) -->
-             {%if head_data%}
             <div class="flex-shrink-0 flex items-center justify-center mb-8">
                 <div class="bg-white rounded-2xl shadow-lg p-6 w-80 transform hover:scale-105 transition-transform duration-300">
                     <!-- Profile Photo -->
-                     
                     <div class="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 ring-4 ring-blue-200">
-                      {% if head_data.photo %}
-                        <img src="{{head_data.photo.url}}" alt="Profile Photo" class="w-full h-full object-cover">
-                      {% else %}
-                          <span>No photo uploaded</span>
-                      {%endif%}
+                        <img src="https://via.placeholder.com/150" alt="Profile Photo" class="w-full h-full object-cover">
                     </div>
                     <!-- Student Details -->
-                    <p class="text-lg font-extrabold text-gray-800 text-center">Head Name: <span class="font-light">{{head_data.name}}</span></p>
-                    <p class="text-lg font-extrabold text-gray-800 text-center">Head Username: <span class="font-light">{{head_data.user.username}}</span></p>
-                    <p class="text-lg font-extrabold text-gray-800 text-center">University: <span class="font-light">{{head_data.university}}</span></p>
-                    <p class="text-lg font-extrabold text-gray-800 text-center">Created at: <span class="font-light">{{head_data.created_at}}</span></p>
-                    <p class="text-lg font-extrabold text-gray-800 text-center">Head ID(Confidential): <span class="font-light">{{head_data.head_id}}</span></p>
-                    <p class="text-lg font-extrabold text-gray-800 text-center">Passkey(Confidential): <span class="font-light">{{head_data.passkey}}</span></p>
+                    <h2 class="text-2xl font-bold text-gray-800 text-center">John Doe</h2>
+                    <p class="text-gray-600 text-center">Student ID: 123456</p>
+                    <p class="text-gray-600 text-center">Computer Science</p>
+                    <p class="text-gray-600 text-center">Year: Junior</p>
                     <!-- Edit Profile Button -->
                     <button class="mt-6 w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Edit Profile</button>
-                    <button class="mt-6 w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1"><a href="{% url 'delete-profile' %}">Remove Event Head Account</a></button>
                 </div>
             </div>
-        {%endif%}
+
             <!-- Staff Details Section (Scrollable) -->
             <div class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-indigo-300 scrollbar-track-blue-50">
                 <div class="space-y-6 pr-2">
@@ -80,32 +72,29 @@
             <div class="max-w-lg mx-auto space-y-8">
                 <!-- Upper Form Section (Academic Information) -->
                 <section class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-                    {% if user_form.errors %}
-                    <div class="alert alert-danger">{{ user_form.errors }}</div>
-                    {% endif %}
-                    {% if head_form.errors %}
-                    <div class="alert alert-danger">{{head_form.errors }}</div>
-                    {% endif %}
-                    {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} mt-3" role="alert">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-                {%if not head_data%}
                     <h3 class="text-xl font-semibold text-gray-800 mb-4">Academic Information</h3>
-                    <form class="space-y-4"method='POST'>
-                        {% csrf_token %}
-                        {{user_form|crispy}}
-                        {{head_form|crispy}}
-                        <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Register</button>
+                    <form class="space-y-4">
+                        <div>
+                            <label for="major" class="block text-sm font-medium text-gray-700">Major</label>
+                            <input type="text" id="major" name="major" value="Computer Science" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all duration-300 ease-in-out transform focus:scale-105" />
+                        </div>
+                        <div>
+                            <label for="gpa" class="block text-sm font-medium text-gray-700">GPA</label>
+                            <input type="text" id="gpa" name="gpa" value="3.8" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all duration-300 ease-in-out transform focus:scale-105" />
+                        </div>
+                        <div>
+                            <label for="year" class="block text-sm font-medium text-gray-700">Year</label>
+                            <select id="year" name="year" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all duration-300 ease-in-out transform focus:scale-105">
+                                <option>Freshman</option>
+                                <option>Sophomore</option>
+                                <option selected>Junior</option>
+                                <option>Senior</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Save Changes</button>
                     </form>
-                    {%else%}
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">University head already exists!</h3>
-                    {%endif%}
                 </section>
-                
+
                 <!-- Lower Form Section (Personal Information) -->
                 <section class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4">Personal Information</h3>
@@ -128,4 +117,5 @@
             </div>
         </main>
     </div>
-{%endblock%}
+</body>
+</html>
