@@ -269,19 +269,9 @@
         <!-- Organization Registration -->
         <div class="registration-section">
             <h2>University Department login</h2>
-            <form>
-                <div class="form-group">
-                    <label for="org-name">Department Name</label>
-                    <input type="text" id="org-name" placeholder="Enter department name" required>
-                </div>
-                <div class="form-group">
-                    <label for="org-contact">Contact Person</label>
-                    <input type="text" id="org-contact" placeholder="Enter contact person's name" required>
-                </div>
-                <div class="form-group">
-                    <label for="org-email">Department Email</label>
-                    <input type="email" id="org-email" placeholder="Enter department email" required>
-                </div>
+            <form method="post" action="{% url 'department-login' %}">
+                {% csrf_token %}
+                {{ dept_form|crispy }}
                 <button type="submit" class="submit-btn">Login</button>
             </form>
         </div>

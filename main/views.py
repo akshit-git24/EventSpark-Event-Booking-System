@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .forms import UserRegistrationForm,UniversityRegistrationForm,UniversityLoginForm,HeadRegistrationForm,HeadLoginForm,StudentForm,EventForm
+from .forms import UserRegistrationForm,UniversityRegistrationForm,UniversityLoginForm,HeadRegistrationForm,HeadLoginForm,StudentForm,EventForm,DepartmentLoginForm,DepartmentForm
 from django.contrib import messages
 from .models import University,Head,Department,EventCoordinator,Student
 from django.contrib.auth import login,logout
@@ -35,7 +35,7 @@ def UniversityRegister(request):
             university.save()
             login(request, user)
             messages.success(request, 'University registered successfully! Waiting for admin approval.')
-            return render(request,'pending_uni.html')
+            return render(request,'pending_uni.html',{'university':university})
         else:
             print("user_form errors:", user_form.errors)
             print("uni_form errors:", uni_form.errors)
@@ -67,7 +67,6 @@ def university_login(request):
                         messages.error(request, 'Invalid University ID or credentials.')
             else:
                 messages.error(request, 'Invalid username or password.')
-                return render(request, 'customlog.html', {'uni_form': uni_form})
     else:
         uni_form = UniversityLoginForm()
     return render(request, 'customlog.html', {'uni_form': uni_form})
@@ -112,11 +111,25 @@ def university_dashboard(request,university):
             user_form = UserRegistrationForm()
             head_form = HeadRegistrationForm()
         context = {'user_form': user_form, 'head_form': head_form}
-        return render(request, 'UniDashboard.html', context)                
-
-    # will add more...    
-    context = {'head_data':head_data}
-    return render(request, 'UniDashboard.html', context)     
+        return render(request, 'UniDashboard.html', context) 
+                   
+    departments=Department.objects.filter(university=university)
+    if request.method == "POST":
+        dept_form = DepartmentForm(request.POST, request.FILES)
+        user_form = UserRegistrationForm(request.POST)
+        if dept_form.is_valid() and user_form.is_valid():
+            user = user_form.save()
+            department = dept_form.save(commit=False)
+            department.university = university
+            department.user = user
+            department.save()
+            messages.success(request, "Department created successfully!")
+            return redirect('dashboard')
+    else:
+        dept_form = DepartmentForm()
+        user_form = UserRegistrationForm()
+    context = {'dept_form': dept_form,'departments':departments,'head_data':head_data,'user_form':user_form}
+    return render(request, 'UniDashboard.html', context)
 
 @login_required   
 def Head_Register(request):
@@ -157,8 +170,9 @@ def student_registration(request):
 def custom_login(request):
     uni_form=UniversityLoginForm()
     head_form = HeadLoginForm()
-    messages.error(request, '🛑Only For Staff Purpose Login!🛑')
-    return render(request,'customlog.html',{'uni_form':uni_form,'head_form':head_form})
+    dept_form = DepartmentLoginForm()
+    messages.error(request, "🛑Only Staff login allowed!🛑")
+    return render(request,'customlog.html',{'uni_form':uni_form,'head_form':head_form,'dept_form':dept_form})
 
 @login_required
 def delete_head(request, head_id):
@@ -175,16 +189,16 @@ def Head_login(request):
         if head_form.is_valid():
             username = head_form.cleaned_data['username']
             password = head_form.cleaned_data['password']
-            head_id = head_form.cleaned_data['head_id']
+            uni_id = head_form.cleaned_data['head_id']
             passkey = head_form.cleaned_data['passkey']
             user = authenticate(request, username=username, password=password)
             if user is not None:
-                try:
-                    head = Head.objects.get(user=user, head_id=head_id, passkey=passkey)
-                    login(request, user)
-                    return redirect('dashboard')
-                except Head.DoesNotExist:
-                    messages.error(request, 'Invalid credentials: Head ID or passkey do not match.')
+                    try:
+                        head = Head.objects.get(user=user, head_id=uni_id, passkey=passkey)
+                        login(request, user)
+                        return render(request,'head.html',{'head_details':head})
+                    except Head.DoesNotExist:
+                        messages.error(request, 'Invalid credentials.')
             else:
                 messages.error(request, 'Invalid username or password.')
     else:
@@ -192,9 +206,30 @@ def Head_login(request):
     return render(request, 'customlog.html', {'head_form': head_form})
 
 def Department_login(request):
-    ...
+    if request.method == 'POST':
+        dept_form = DepartmentLoginForm(request.POST)
+        if dept_form.is_valid():
+            username = dept_form.cleaned_data['username']
+            password = dept_form.cleaned_data['password']
+            department_id = dept_form.cleaned_data['department_id']
+            passkey = dept_form.cleaned_data['passkey']   
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                try:
+                    department = Department.objects.get(user=user, department_id=department_id, passkey=passkey)
+                    login(request, user)
+                    return render(request, 'department.html', {'department': department})
+                except Department.DoesNotExist:
+                    messages.error(request, 'Invalid credentials.')
+            else:
+                messages.error(request, 'Invalid username or password.')
+    else:
+        dept_form = DepartmentLoginForm()
+    return render(request, 'customlog.html', {'dept_form': dept_form})
+
 def coordinator_login(request):
     ...
+
 def loginstudent(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -235,14 +270,14 @@ def dashboard(request):
         pass
     
     try:
-        head = Head.objects.get(user=user)
-        return head_dashboard(request)
+        head_details = Head.objects.get(user=user)
+        return render(request, 'head.html', {'head_details': head_details})
     except Head.DoesNotExist:
         pass
     
     try:
         department = Department.objects.get(user=user)
-        return render(request, 'department_dashboard.html', {'department': department})
+        return render(request, 'department.html', {'department': department})
     except Department.DoesNotExist:
         pass
     
@@ -314,15 +349,6 @@ def university_events(request):
     events = Event.objects.filter(university=university).order_by('-created')
     return render(request, 'event.html', {'events': events})
     
-@login_required
 def head_dashboard(request):
-    try:
-        head_details = Head.objects.get(user=request.user)
-    except Head.DoesNotExist:
-        messages.error(request, "No Head profile found for this user.")
-        return redirect('dashboard')
-    students = Student.objects.filter(university=head_details.university)
-    return render(request, 'head.html', {'head_details': head_details, 'students': students})
-    
-    
+    head_details=Head.objects.get(user=request.user)
     

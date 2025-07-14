@@ -6,19 +6,17 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('',views.homepage,name='homepage'),
     path('university-register/',views.UniversityRegister,name='University-Register'),
-    # path('pending-approval-university/' ,views.pending_approval_university,name='pending-approval-university'),
     path('login/',views.loginstudent,name='login-student'),
     path('custom-login/',views.custom_login,name='custom-login'),
     path('university-login/', views.university_login, name='university-login'),
-    # path('head_register/',views.Head_Register,name='Head-Register'),
     path('delete-profile/',views.delete_profile,name='delete-profile'),
-    # path('university-portal/',views.UniversityDashboard,name='University-Dashboard'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('logout/', views.logout_view, name='logout'),
     path('Head-login/', views.Head_login, name='head-login'),
     path('delete_head/<int:head_id>/', views.delete_head, name='delete_head'),
     path('create-event/', views.create_event, name='create-event'),
     path('events/', views.university_events, name='university-events'),
+    path('department-login/', views.Department_login, name='department-login'),
 ]
 
 if settings.DEBUG:

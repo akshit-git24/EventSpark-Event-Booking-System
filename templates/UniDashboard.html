@@ -33,12 +33,40 @@
                     <p class="text-lg font-extrabold text-gray-800 text-center">Head ID(Confidential): <span class="font-light">{{head_data.head_id}}</span></p>
                     <p class="text-lg font-extrabold text-gray-800 text-center">Passkey(Confidential): <span class="font-light">{{head_data.passkey}}</span></p>
                     <!-- Edit Profile Button -->
-                    <button class="mt-6 w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Edit Profile</button>
+                    <a class="mt-6 w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Edit Profile</a>
                     <br>
                     <a href="{% url 'delete_head' head_data.head_id %}" class="mt-6 w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Remove Event Head Account</a>
                 </div>
             </div>
         {%endif%}
+
+        {% for dept in departments %}
+            <div class="flex-shrink-0 flex items-center justify-center mb-8">
+                <div class="bg-white rounded-2xl shadow-lg p-6 w-80 transform hover:scale-105 transition-transform duration-300">
+                    <!-- Profile Photo -->
+                     
+                    <div class="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 ring-4 ring-blue-200">
+                      {% if dept.photo %}
+                        <img src="{{dept.Department_admin.url}}" alt="Profile Photo" class="w-full h-full object-cover">
+                      {% else %}
+                          <span>No photo uploaded</span>
+                      {%endif%}
+                    </div>
+                    <!-- Student Details -->
+                    <p class="text-lg font-extrabold text-gray-800 text-center">dept Name: <span class="font-light">{{dept.name}}</span></p>
+                    <p class="text-lg font-extrabold text-gray-800 text-center">dept Username: <span class="font-light">{{dept.user.username}}</span></p>
+                    <p class="text-lg font-extrabold text-gray-800 text-center">University: <span class="font-light">{{dept.university}}</span></p>
+                    <p class="text-lg font-extrabold text-gray-800 text-center">Created at: <span class="font-light">{{dept.created_at}}</span></p>
+                    <p class="text-lg font-extrabold text-gray-800 text-center">dept ID(Confidential): <span class="font-light">{{dept.department_id}}</span></p>
+                    <p class="text-lg font-extrabold text-gray-800 text-center">Passkey(Confidential): <span class="font-light">{{dept.passkey}}</span></p>
+                    <!-- Edit Profile Button -->
+                    <a class="mt-6 w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Edit Profile</a>
+                    <br>
+                    <a href="#" class="mt-6 w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Remove Event Head Account</a>
+                </div>
+            </div>
+        {%endfor%}
+
             <!-- Staff Details Section (Scrollable) -->
             <div class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-indigo-300 scrollbar-track-blue-50">
                 <div class="space-y-6 pr-2">
@@ -109,21 +137,25 @@
                 
                 <!-- Lower Form Section (Personal Information) -->
                 <section class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Personal Information</h3>
-                    <form class="space-y-4">
-                        <div>
-                            <label for="full-name" class="block text-sm font-medium text-gray-700">Full Name</label>
-                            <input type="text" id="full-name" name="full-name" value="John Doe" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all duration-300 ease-in-out transform focus:scale-105" />
+                    {% if user_form.errors %}
+                    <div class="alert alert-danger">{{ user_form.errors }}</div>
+                    {% endif %}
+                    {% if department_form.errors %}
+                    <div class="alert alert-danger">{{department_form.errors }}</div>
+                    {% endif %}
+                    {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} mt-3" role="alert">
+                            {{ message }}
                         </div>
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                            <input type="email" id="email" name="email" value="john.doe@university.edu" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all duration-300 ease-in-out transform focus:scale-105" />
-                        </div>
-                        <div>
-                            <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
-                            <input type="tel" id="phone" name="phone" value="+1 (123) 456-7890" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all duration-300 ease-in-out transform focus:scale-105" />
-                        </div>
-                        <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Save Changes</button>
+                    {% endfor %}
+                {% endif %}
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Academic Information</h3>
+                    <form class="space-y-4"method='POST' enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{user_form|crispy}}
+                        {{dept_form|crispy}}
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Register</button>
                     </form>
                 </section>
             </div>

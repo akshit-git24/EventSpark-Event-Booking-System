@@ -24,15 +24,8 @@ class UniversityLoginForm(forms.Form):
     uni_id = forms.CharField(label='University ID',help_text="This field is of integer type", max_length=13)
     passkey = forms.CharField(label='University Passkey', max_length=20)
 
-class HeadLoginForm(forms.Form):
-    username = forms.CharField(label='Username :', max_length=150)
-    password = forms.CharField(label='Password :', widget=forms.PasswordInput)
-    head_id = forms.CharField(label='University Event Head ID :',help_text="This field is of integer type", max_length=13)
-    passkey = forms.CharField(label='Unique Passkey :', max_length=20)
-
-
 class HeadRegistrationForm(forms.ModelForm):
-    photo = forms.ImageField(required=False)
+    photo = forms.ImageField(required=True)
 
     class Meta(UserRegistrationForm.Meta):
         model = Head
@@ -41,13 +34,25 @@ class HeadRegistrationForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         return cleaned_data
+    
 
+class HeadLoginForm(forms.Form):
+    username = forms.CharField(label='Username :', max_length=150)
+    password = forms.CharField(label='Password :', widget=forms.PasswordInput)
+    head_id = forms.CharField(label='University Event Head ID :',help_text="This field is of integer type", max_length=13)
+    passkey = forms.CharField(label='Unique Passkey :', max_length=20)
+
+class DepartmentLoginForm(forms.Form):
+    username = forms.CharField(label='Username :', max_length=150)
+    password = forms.CharField(label='Password :', widget=forms.PasswordInput)
+    department_id = forms.CharField(label='University Department ID :',help_text="This field is of integer type", max_length=13)
+    passkey = forms.CharField(label='Unique Passkey :', max_length=20)
 
 class DepartmentForm(forms.ModelForm):
     class Meta:
         model = Department
-        fields = ['name', 'university', 'user', 'department_id', 'passkey', 'photo']
-
+        fields = ['name', 'photo','Department_admin']
+                                                        
 class EventCoordinatorForm(forms.ModelForm):
     class Meta:
         model = EventCoordinator

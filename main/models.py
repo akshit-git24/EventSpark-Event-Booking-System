@@ -36,8 +36,8 @@ class Department(models.Model):
     name = models.CharField(max_length=100)
     university = models.ForeignKey(University, on_delete=models.CASCADE, related_name='departments')
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    department_id = models.PositiveIntegerField(unique=True,default=0)
-    passkey = models.CharField(max_length=10,default=1234567890)
+    department_id = models.PositiveIntegerField(unique=True,default=0)#10
+    passkey = models.CharField(max_length=10,default=1234567890)#10
     photo = models.ImageField(upload_to='Department_photos/', null=True, blank=True)
     Department_admin = models.ImageField(upload_to='Department_Admin_photos/', null=True, blank=True)
     
@@ -48,6 +48,7 @@ class Department(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.university.name})"
+
 
 class EventCoordinator(models.Model):
     name = models.CharField(max_length=100)
@@ -92,7 +93,7 @@ class Event(models.Model):
     end_time = models.TimeField()
     banner = models.ImageField(upload_to='event_banners/', null=True, blank=True)
     fee = models.DecimalField(max_digits=10, decimal_places=2)
-    is_approved = models.BooleanField(default=False)#FOR university head approval
+    # is_approved = models.BooleanField(default=False)#FOR university head approval
     
     def __str__(self):
         return f"{self.name} ({self.university.name})"
