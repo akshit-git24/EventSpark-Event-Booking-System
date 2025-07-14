@@ -14,6 +14,8 @@ urlpatterns = [
     path('delete-profile/',views.delete_profile,name='delete-profile'),
     # path('university-portal/',views.UniversityDashboard,name='University-Dashboard'),
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('logout/', views.logout_view, name='logout'),
+    path('delete_head/<int:head_id>/', views.delete_head, name='delete_head'),
 ]
 
 if settings.DEBUG:

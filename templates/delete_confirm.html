@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h2>Confirm Head Deletion</h2>
+  <p>Are you sure you want to delete the Head profile for {{ head.name }}?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Yes, delete this Head</button>
+    <a href="{% url 'dashboard'%}">Cancel</a>
+  </form>
+{% endblock %}

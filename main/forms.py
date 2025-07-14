@@ -24,6 +24,12 @@ class UniversityLoginForm(forms.Form):
     uni_id = forms.CharField(label='University ID',help_text="This field is of integer type", max_length=13)
     passkey = forms.CharField(label='University Passkey', max_length=20)
 
+class HeadLoginForm(forms.Form):
+    username = forms.CharField(label='Username :', max_length=150)
+    password = forms.CharField(label='Password :', widget=forms.PasswordInput)
+    head_id = forms.CharField(label='University Event Head ID :',help_text="This field is of integer type", max_length=13)
+    passkey = forms.CharField(label='Unique Passkey :', max_length=20)
+
 
 class HeadRegistrationForm(forms.ModelForm):
     # university = forms.ModelChoiceField(queryset=University.objects.all(), required=True)

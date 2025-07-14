@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .forms import UserRegistrationForm,UniversityRegistrationForm,UniversityLoginForm,HeadRegistrationForm
+from .forms import UserRegistrationForm,UniversityRegistrationForm,UniversityLoginForm,HeadRegistrationForm,HeadLoginForm
 from django.contrib import messages
 from .models import University,Head,Department,EventCoordinator,Student
 from django.contrib.auth import login,logout
@@ -68,6 +68,7 @@ def university_login(request):
         form = UniversityLoginForm()
     return render(request, 'customlog.html', {'form': form})
 
+@login_required
 def university_dashboard(request,university):
     if not university.is_approved:
        messages.warning(request,"This University Account is pending for approval.")
@@ -112,7 +113,8 @@ def university_dashboard(request,university):
     #will add more...    
     context = {'head_data':head_data}
     return render(request, 'UniDashboard.html', context)     
-   
+
+@login_required   
 def Head_Register(request):
     if request.method == "POST":
         user_form = UserRegistrationForm(request.POST)
@@ -152,11 +154,40 @@ def student_registration(request):
 
 def custom_login(request):
     uni_form=UniversityLoginForm()
-    return render(request,'customlog.html',{'uni_form':uni_form})
+    head_form = HeadLoginForm()
+    return render(request,'customlog.html',{'uni_form':uni_form,'head_form':head_form})
 
+
+@login_required
+def delete_head(request, head_id):
+    head = get_object_or_404(Head, head_id=head_id)
+    user = head.user
+    head.delete()
+    user.delete()  # Optionally delete the associated user account
+    messages.success(request, "Head profile deleted successfully.")
+    return redirect('dashboard')
 
 def Head_login(request):
-    ...
+    if request.method == 'POST':
+        form = HeadLoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            uni_id = form.cleaned_data['head_id']
+            passkey = form.cleaned_data['passkey']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                    try:
+                        head = Head.objects.get(user=user, head_id=uni_id, passkey=passkey)
+                        login(request, user)
+                        return render(request,'head.html')
+                    except Head.DoesNotExist:
+                        messages.error(request, 'Invalid credentials.')
+            else:
+                messages.error(request, 'Invalid username or password.')
+    else:
+        form = UniversityLoginForm()
+    return render(request, 'customlog.html', {'form': form})
 def Department_login(request):
     ...
 def coordinator_login(request):
@@ -172,31 +203,53 @@ def dashboard(request):
         return university_dashboard(request,university)
     except University.DoesNotExist:
         pass
-    # Check for Head
+    
     try:
         head = Head.objects.get(user=user)
         return render(request, 'head_dashboard.html', {'head': head})
     except Head.DoesNotExist:
         pass
-    # Check for Department
+    
     try:
         department = Department.objects.get(user=user)
         return render(request, 'department_dashboard.html', {'department': department})
     except Department.DoesNotExist:
         pass
-    # Check for EventCoordinator
+    
     try:
         coordinator = EventCoordinator.objects.get(user=user)
         return render(request, 'coordinator_dashboard.html', {'coordinator': coordinator})
     except EventCoordinator.DoesNotExist:
         pass
-    # If user is not found in any role
+
     messages.error(request,'🛑You are not authorized to access this page!🛑')
     return redirect('homepage')
 
+@login_required
 def delete_profile(request):
     user = request.user
-    head = get_object_or_404(Head, user=user)
-    head.delete()
-    messages.success(request, 'Head account deleted successfully!')
-    return render(request,'UniDashboard.html')
+    try:
+        # Delete related profiles if they exist
+        if hasattr(user, 'student'):
+            user.student.delete()
+        if hasattr(user, 'head'):
+            user.head.delete()
+        if hasattr(user, 'university'):
+            user.university.delete()
+        if hasattr(user, 'department'):
+            user.department.delete()
+        if hasattr(user, 'eventcoordinator'):
+            user.eventcoordinator.delete()
+    except Exception as e:
+        # Optionally handle errors
+        pass
+    user.delete()
+    logout(request)
+    return redirect('homepage')  # Make sure this matches your urls.py
+
+def logout_view(request):
+    logout(request) 
+    return redirect("homepage")
+
+
+    
