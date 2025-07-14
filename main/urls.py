@@ -15,7 +15,10 @@ urlpatterns = [
     # path('university-portal/',views.UniversityDashboard,name='University-Dashboard'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('logout/', views.logout_view, name='logout'),
+    path('Head-login/', views.Head_login, name='head-login'),
     path('delete_head/<int:head_id>/', views.delete_head, name='delete_head'),
+    path('create-event/', views.create_event, name='create-event'),
+    path('events/', views.university_events, name='university-events'),
 ]
 
 if settings.DEBUG:

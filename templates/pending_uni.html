@@ -1,115 +1,113 @@
 {% extends "layout.html" %}
-{%load crispy_forms_tags%}
-   {%block title%}Pending Approval{%endblock title%}
-   {%block style%}
+{% load crispy_forms_tags %}
+{% block title %}Pending Approval{% endblock title %}
+{% block style %}
     body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 600px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin: 20px;
-            overflow: hidden;
-        }
-        .banner {
-            background: linear-gradient(90deg, #e65100, #f57c00); /* Darker orange gradient */
-            color: #fff;
-            text-align: center;
-            padding: 20px;
-            position: relative;
-        }
-        .banner h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-        .banner .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid #fff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-left: 10px;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .applicant-details {
-            padding: 20px;
-        }
-        .applicant-details h2 {
-            color: #333;
-            border-bottom: 2px solid #e65100; /* Match darker orange */
-            padding-bottom: 5px;
-            margin-top: 0;
-        }
-        .detail-group {
-            margin: 15px 0;
-        }
-        .detail-group label {
-            font-weight: bold;
-            display: block;
-            color: #555;
-        }
-        .detail-group span {
-            display: block;
-            padding: 8px;
-            background: #f9f9f9;
-            border-radius: 4px;
-            margin-top: 5px;
-        }
-        .status {
-            text-align: center;
-            font-style: italic;
-            color: #888;
-            margin-top: 20px;
-        }
-     {%endblock style%}
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+    .container {
+        max-width: 600px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin: 80px 20px 20px 20px; /* Added 80px top margin for navbar */
+        overflow: hidden;
+    }
+    .banner {
+        background: linear-gradient(90deg, #e65100, #f57c00); /* Darker orange gradient */
+        color: #fff;
+        text-align: center;
+        padding: 20px;
+        position: relative;
+    }
+    .banner h1 {
+        margin: 0;
+        font-size: 24px;
+    }
+    .banner .spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top: 3px solid #fff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-left: 10px;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    .applicant-details {
+        padding: 20px;
+    }
+    .applicant-details h2 {
+        color: #333;
+        border-bottom: 2px solid #e65100; /* Match darker orange */
+        padding-bottom: 5px;
+        margin-top: 0;
+    }
+    .detail-group {
+        margin: 15px 0;
+    }
+    .detail-group label {
+        font-weight: bold;
+        display: block;
+        color: #555;
+    }
+    .detail-group span {
+        display: block;
+        padding: 8px;
+        background: #f9f9f9;
+        border-radius: 4px;
+        margin-top: 5px;
+    }
+    .status {
+        text-align: center;
+        font-style: italic;
+        color: #888;
+        margin-top: 20px;
+    }
+{% endblock style %}
 
-{%block content%}
-        
-           <div class="container">
+{% block content %}
+    <div class="container">
         <div class="banner">
             <h1>Waiting for Approval <span class="spinner"></span></h1>
         </div>
         <div class="applicant-details">
-            <h2>Applicant Details</h2>
+            <h2>Applicant Admin and University Details</h2>
             <div class="detail-group">
-                <label>Name:</label>
-                <span>John Doe</span>
+                <label>UserName:</label>
+                <span style="color: black;">{{university.user.username}}</span>
             </div>
             <div class="detail-group">
-                <label>Department:</label>
-                <span>Engineering</span>
+                <label>University Name:</label>
+                <span style="color: black;">{{university.name}}</span>
             </div>
             <div class="detail-group">
                 <label>Email:</label>
-                <span>john.doe@example.com</span>
+                <span style="color: black;">{{university.user.email}}</span>
             </div>
             <div class="detail-group">
                 <label>Phone:</label>
-                <span>+1 (555) 123-4567</span>
+                <span style="color: black;">{{university.contact_phone}}</span>
             </div>
             <div class="detail-group">
                 <label>Request Type:</label>
-                <span>Project Proposal</span>
+                <span style="color: black;">University Registration for TechSpark⚡</span>
             </div>
             <div class="detail-group">
                 <label>Submission Date:</label>
-                <span>July 11, 2025</span>
+                <span style="color: black;">{{university.created_at}}</span>
             </div>
-            <div class="status">Pending Review by Approver</div>
+            <div class="status">Pending Review by Admin,Make sure to make payment.For more details refer <a href="#">document</a></div>
         </div>
     </div>
-
- {% endblock %}
+{% endblock %}

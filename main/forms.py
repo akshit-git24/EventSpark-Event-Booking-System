@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import University, Head, Department, EventCoordinator, Student
+from .models import University, Head, Department, EventCoordinator, Student, Event
 
 class UserRegistrationForm(UserCreationForm):
     email=forms.EmailField(required=True)
@@ -14,7 +14,7 @@ class UserRegistrationForm(UserCreationForm):
 class UniversityRegistrationForm(forms.ModelForm):
     class Meta:
         model = University
-        fields = ['name', 'address', 'contact_email', 'contact_phone', 'uni_document', 'photo']
+        fields = ['name', 'address', 'contact_email', 'contact_phone', 'uni_document', 'photo','admin_photo']
         widgets = {'address': forms.Textarea(attrs={'rows': 3})}
 
 
@@ -32,9 +32,6 @@ class HeadLoginForm(forms.Form):
 
 
 class HeadRegistrationForm(forms.ModelForm):
-    # university = forms.ModelChoiceField(queryset=University.objects.all(), required=True)
-    # head_id = forms.IntegerField(required=True)
-    # passkey = forms.CharField(max_length=13, required=True)
     photo = forms.ImageField(required=False)
 
     class Meta(UserRegistrationForm.Meta):
@@ -59,5 +56,18 @@ class EventCoordinatorForm(forms.ModelForm):
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
-        fields = ['user', 'university', 'full_name', 'email', 'phone', 'is_approved', 'rank', 'document', 'is_verified', 'student_id', 'document2', 'photo']
+        fields = ['student_id']
+
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ['name', 'start_date', 'start_time', 'end_date', 'end_time', 'banner', 'fee']
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'type': 'date'}),
+            'start_time': forms.TimeInput(format='%H:%M:%S', attrs={'class': 'form-control', 'placeholder': 'HH:MM:SS'}),
+            'end_time': forms.TimeInput(format='%H:%M:%S', attrs={'class': 'form-control', 'placeholder': 'HH:MM:SS'}),
+        }
+    
 

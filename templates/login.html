@@ -158,16 +158,12 @@
     {%endblock style%}
     {%block content%}
     <div class="login-container">
-        <h2>Login</h2>
-        <div class="form-group">
-            <input type="email" id="email" placeholder=" " required>
-            <label for="email">Email</label>
-        </div>
-        <div class="form-group">
-            <input type="password" id="password" placeholder=" " required>
-            <label for="password">Password</label>
-        </div>
+        <form class="space-y-4"method='POST'>
+            {% csrf_token %}
+            {{auth_form|crispy}}
+            {{std_form|crispy}}
         <button class="login-btn">Sign In</button>
+    </form>
         <div class="forgot-password">
             <a href="#">Forgot Password?</a>
         </div>

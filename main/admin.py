@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import University, Head
+from .models import University, Head,Student,Event
 # Register your models here.
 @admin.register(University)
 class UniversityAdmin(admin.ModelAdmin):
@@ -8,3 +8,5 @@ class UniversityAdmin(admin.ModelAdmin):
     search_fields = ('name', 'contact_email', 'contact_phone')
 
 admin.site.register(Head)
+admin.site.register(Student)
+admin.site.register(Event)

@@ -60,13 +60,55 @@
 
     .container {
         max-width: 1400px;
-        margin: 100px auto 0;
+        margin: 0 auto 0; /* Removed top margin to reduce spacing after messages */
         display: flex;
         flex-direction: row;
         gap: 20px;
         justify-content: center;
         position: relative;
         z-index: 1;
+    }
+
+    .messages-container {
+        max-width: 1400px;
+        margin: 40px auto 10px; /* Reduced margin from 80px to 40px (top) and 20px to 10px (bottom) */
+        padding: 15px;
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 183, 235, 0.2);
+        text-align: center;
+    }
+
+    .alert {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .alert-success {
+        background-color: #e6f4ea;
+        color: #2e7d32;
+        border: 1px solid #2e7d32;
+    }
+
+    .alert-error {
+        background-color: #fdeded;
+        color: #d32f2f;
+        border: 1px solid #d32f2f;
+    }
+
+    .alert-info {
+        background-color: #e3f2fd;
+        color: #0288d1;
+        border: 1px solid #0288d1;
+    }
+
+    .alert-warning {
+        background-color: #fff3e0;
+        color: #f57c00;
+        border: 1px solid #f57c00;
     }
 
     .registration-section {
@@ -100,7 +142,7 @@
 
     .form-group label {
         display: block;
-        color: #34495e;
+        color: #000000; /* Black labels */
         font-size: 14px;
         font-weight: 500;
         margin-bottom: 5px;
@@ -182,6 +224,10 @@
             max-width: 100%;
             min-width: 100%;
         }
+
+        .messages-container {
+            margin: 40px 20px 10px; /* Adjusted for mobile */
+        }
     }
 {% endblock style %}
 
@@ -190,6 +236,15 @@
         <div class="badge"></div>
         <h1>Staff Access Portal</h1>
     </div>
+    {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     <div class="container">
         <!-- Individual Registration -->
         <div class="registration-section">
@@ -197,13 +252,6 @@
             <form method="post" action="{% url 'university-login' %}">
                 {% csrf_token %}
                 {{ uni_form|crispy }}
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} mt-3" role="alert">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
                 <button type="submit" class="submit-btn">Login</button>
             </form>
         </div>
@@ -211,23 +259,16 @@
         <!-- Team Registration -->
         <div class="registration-section">
             <h2>University Event Head Login</h2>
-            <form method='post' >
+            <form method='post' action="{% url 'head-login' %}">
                 {% csrf_token %}
                 {{ head_form|crispy }}
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} mt-3" role="alert">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
                 <button type="submit" class="submit-btn">Login</button>
             </form>
         </div>
 
         <!-- Organization Registration -->
         <div class="registration-section">
-            <h2>University Departmnet login</h2>
+            <h2>University Department login</h2>
             <form>
                 <div class="form-group">
                     <label for="org-name">Department Name</label>
