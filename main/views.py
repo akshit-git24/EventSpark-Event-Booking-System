@@ -437,9 +437,9 @@ def approve_coordinator(request,coord_id):
     messages.success(request, "Coordinator Approved successfully.They can now login to Coordinator Dashboard! ")
     return redirect('dashboard')
 
-def head_dashboard(request):
-    head_details=Head.objects.get(user=request.user)
     
 def about_page(request):
     return render(request, 'about.html')
     
+
+
