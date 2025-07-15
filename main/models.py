@@ -71,14 +71,13 @@ class Student(models.Model):
     email = models.EmailField()
     phone = models.CharField(max_length=10)
     is_approved = models.BooleanField(default=False)#FOR department admin approval
-    rank = models.PositiveIntegerField(null=True, blank=True)
     document = models.FileField(upload_to='student_documents/', null=True, blank=True)
     is_verified = models.BooleanField(default=False)#FOR university head approval
     created_at = models.DateTimeField(auto_now_add=True)
     student_id=models.PositiveIntegerField(null=True, blank=True)
     document2 = models.FileField(upload_to='student_verified_head_document/',verbose_name="Verification Document",help_text="Upload your university verification document")
     photo = models.ImageField(upload_to='Student_Profile_photos/', null=True, blank=True)
-    department=models.ForeignKey(Department,on_delete=models.CASCADE)
+    department=models.ForeignKey(Department,on_delete=models.CASCADE,null=True)
     class Meta:
         unique_together = ('university', 'student_id')
 

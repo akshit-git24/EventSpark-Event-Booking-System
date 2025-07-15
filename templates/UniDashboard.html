@@ -1,171 +1,153 @@
 {% extends "layout.html" %}
-{%load crispy_forms_tags%}
-   {%block title%}University Dashboard{%endblock title%}
-   {%block style%}
+{% load crispy_forms_tags %}
+{% block title %}University Dashboard{% endblock title %}
+{% block style %}
     <script src="https://cdn.tailwindcss.com"></script>
-   {%endblock style%}
+    <style>
+        /* Custom Scrollbar */
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 8px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #f0f7ff;
+            border-radius: 4px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #818cf8;
+            border-radius: 4px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+            background: #6366f1;
+        }
+        /* Glassmorphism Effect */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+{% endblock style %}
 
-   {% block content %}
+{% block content %}
     <!-- Space for Navbar (70px height reserved) -->
     <div class="h-[70px]"></div>
 
-    <div class="flex min-h-[calc(100vh-70px)]">
-        <!-- Sidebar (Left, equal width, split into student and scrollable staff sections) -->
-        <aside class="w-1/2 bg-gradient-to-b from-blue-50 to-white shadow-xl p-8 flex flex-col">
+    <div class="flex flex-col lg:flex-row min-h-[calc(100vh-70px)] bg-gray-100">
+        <!-- Sidebar (Left on desktop, full-width on mobile) -->
+        <aside class="w-full lg:w-1/2 bg-gradient-to-b from-blue-50 to-white shadow-2xl p-6 lg:p-8 flex flex-col">
             <!-- Student Profile Section (Fixed) -->
-             {%if head_data%}
+            {% if head_data %}
             <div class="flex-shrink-0 flex items-center justify-center mb-8">
-                <div class="bg-white rounded-2xl shadow-lg p-6 w-80 transform hover:scale-105 transition-transform duration-300">
+                <div class="bg-white glass-effect rounded-2xl shadow-lg p-6 w-full max-w-md transform hover:scale-105 transition-transform duration-300">
                     <!-- Profile Photo -->
-                     
-                    <div class="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 ring-4 ring-blue-200">
-                      {% if head_data.photo %}
-                        <img src="{{head_data.photo.url}}" alt="Profile Photo" class="w-full h-full object-cover">
-                      {% else %}
-                          <span>No photo uploaded</span>
-                      {%endif%}
+                    <div class="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 ring-4 ring-blue-300">
+                        {% if head_data.photo %}
+                            <img src="{{ head_data.photo.url }}" alt="Profile Photo" class="w-full h-full object-cover">
+                        {% else %}
+                            <span class="text-gray-500 text-center">No photo uploaded</span>
+                        {% endif %}
                     </div>
                     <!-- Student Details -->
-                    <p class="text-lg font-extrabold text-gray-800 text-center">Head Name: <span class="font-light">{{head_data.name}}</span></p>
-                    <p class="text-lg font-extrabold text-gray-800 text-center">Head Username: <span class="font-light">{{head_data.user.username}}</span></p>
-                    <p class="text-lg font-extrabold text-gray-800 text-center">University: <span class="font-light">{{head_data.university}}</span></p>
-                    <p class="text-lg font-extrabold text-gray-800 text-center">Created at: <span class="font-light">{{head_data.created_at}}</span></p>
-                    <p class="text-lg font-extrabold text-gray-800 text-center">Head ID(Confidential): <span class="font-light">{{head_data.head_id}}</span></p>
-                    <p class="text-lg font-extrabold text-gray-800 text-center">Passkey(Confidential): <span class="font-light">{{head_data.passkey}}</span></p>
+                    <p class="text-lg font-extrabold text-gray-800 text-center">Head Name: <span class="font-light">{{ head_data.name }}</span></p>
+                    <p class="text-lg font-extrabold text-gray-800 text-center">Head Username: <span class="font-light">{{ head_data.user.username }}</span></p>
+                    <p class="text-lg font-extrabold text-gray-800 text-center">University: <span class="font-light">{{ head_data.university }}</span></p>
+                    <p class="text-lg font-extrabold text-gray-800 text-center">Created at: <span class="font-light">{{ head_data.created_at }}</span></p>
+                    <p class="text-lg font-extrabold text-gray-800 text-center">Head ID(Confidential): <span class="font-light">{{ head_data.head_id }}</span></p>
+                    <p class="text-lg font-extrabold text-gray-800 text-center">Passkey(Confidential): <span class="font-light">{{ head_data.passkey }}</span></p>
                     {% if head_data.head_document %}
-                    <a href="{{head_data.head_document.url}}" class="text-lg font-extrabold text-gray-800 text-center">Verification Document<span class="font-light">View Document</span></p>
-                    {%endif%}
+                        <a href="{{ head_data.head_document.url }}" class="text-lg font-extrabold text-gray-800 text-center block">Verification Document <span class="font-light text-blue-600 hover:underline">View Document</span></a>
+                    {% endif %}
                     <!-- Edit Profile Button -->
-                    <a class="mt-6 w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Edit Profile</a>
-                    <br>
-                    <a href="{% url 'delete_head' head_data.head_id %}" class="mt-6 w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Remove Event Head Account</a>
+                    <a class="mt-6 w-full block bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1 text-center">Edit Profile</a>
+                    <a href="{% url 'delete_head' head_data.head_id %}" class="mt-4 w-full block bg-gradient-to-r from-red-500 to-pink-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-pink-700 transition-all duration-300 transform hover:-translate-y-1 text-center">Remove Event Head Account</a>
                 </div>
             </div>
-        {%endif%}
+            {% endif %}
 
-        {% for dept in departments %}
+            {% for dept in departments %}
             <div class="flex-shrink-0 flex items-center justify-center mb-8">
-                <div class="bg-white rounded-2xl shadow-lg p-6 w-80 transform hover:scale-105 transition-transform duration-300">
+                <div class="bg-white glass-effect rounded-2xl shadow-lg p-6 w-full max-w-md transform hover:scale-105 transition-transform duration-300">
                     <!-- Profile Photo -->
-                     
-                    <div class="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 ring-4 ring-blue-200">
-                      {% if dept.photo %}
-                        <img src="{{dept.Department_admin.url}}" alt="Profile Photo" class="w-full h-full object-cover">
-                      {% else %}
-                          <span>No photo uploaded</span>
-                      {%endif%}
+                    <div class="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 ring-4 ring-blue-300">
+                        {% if dept.photo %}
+                            <img src="{{ dept.Department_admin.url }}" alt="Profile Photo" class="w-full h-full object-cover">
+                        {% else %}
+                            <span class="text-gray-500 text-center">No photo uploaded</span>
+                        {% endif %}
                     </div>
-                    <!-- Student Details -->
-                    <p class="text-lg font-extrabold text-gray-800 text-center">dept Name: <span class="font-light">{{dept.name}}</span></p>
-                    <p class="text-lg font-extrabold text-gray-800 text-center">dept Username: <span class="font-light">{{dept.user.username}}</span></p>
-                    <p class="text-lg font-extrabold text-gray-800 text-center">University: <span class="font-light">{{dept.university}}</span></p>
-                    <p class="text-lg font-extrabold text-gray-800 text-center">Created at: <span class="font-light">{{dept.created_at}}</span></p>
-                    <p class="text-lg font-extrabold text-gray-800 text-center">dept ID(Confidential): <span class="font-light">{{dept.department_id}}</span></p>
-                    <p class="text-lg font-extrabold text-gray-800 text-center">Passkey(Confidential): <span class="font-light">{{dept.passkey}}</span></p>
+                    <!-- Department Details -->
+                    <p class="text-lg font-extrabold text-gray-800 text-center">Dept Name: <span class="font-light">{{ dept.name }}</span></p>
+                    <p class="text-lg font-extrabold text-gray-800 text-center">Dept Username: <span class="font-light">{{ dept.user.username }}</span></p>
+                    <p class="text-lg font-extrabold text-gray-800 text-center">University: <span class="font-light">{{ dept.university }}</span></p>
+                    <p class="text-lg font-extrabold text-gray-800 text-center">Created at: <span class="font-light">{{ dept.created_at }}</span></p>
+                    <p class="text-lg font-extrabold text-gray-800 text-center">Dept ID(Confidential): <span class="font-light">{{ dept.department_id }}</span></p>
+                    <p class="text-lg font-extrabold text-gray-800 text-center">Passkey(Confidential): <span class="font-light">{{ dept.passkey }}</span></p>
                     <!-- Edit Profile Button -->
-                    <a class="mt-6 w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Edit Profile</a>
-                    <br>
-                    <a href="#" class="mt-6 w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Remove Event Head Account</a>
+                    <a class="mt-6 w-full block bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1 text-center">Edit Profile</a>
+                    <a href="#" class="mt-4 w-full block bg-gradient-to-r from-red-500 to-pink-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-pink-700 transition-all duration-300 transform hover:-translate-y-1 text-center">Remove Event Head Account</a>
                 </div>
             </div>
-        {%endfor%}
+            {% endfor %}
 
             <!-- Staff Details Section (Scrollable) -->
-            <div class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-indigo-300 scrollbar-track-blue-50">
-                <div class="space-y-6 pr-2">
-                    <!-- Staff Profile 1 -->
-                    <div class="bg-white rounded-2xl shadow-lg p-6 w-80 mx-auto transform hover:scale-105 transition-transform duration-300">
-                        <div class="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 ring-4 ring-indigo-200">
-                            <img src="https://via.placeholder.com/150" alt="Staff Photo" class="w-full h-full object-cover">
-                        </div>
-                        <h2 class="text-2xl font-bold text-gray-800 text-center">Dr. Jane Smith</h2>
-                        <p class="text-gray-600 text-center">Role: Professor</p>
-                        <p class="text-gray-600 text-center">Department: Computer Science</p>
-                        <button class="mt-6 w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 transform hover:-translate-y-1">Contact Staff</button>
-                    </div>
-                    <!-- Staff Profile 2 -->
-                    <div class="bg-white rounded-2xl shadow-lg p-6 w-80 mx-auto transform hover:scale-105 transition-transform duration-300">
-                        <div class="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 ring-4 ring-indigo-200">
-                            <img src="https://via.placeholder.com/150" alt="Staff Photo" class="w-full h-full object-cover">
-                        </div>
-                        <h2 class="text-2xl font-bold text-gray-800 text-center">Prof. Michael Lee</h2>
-                        <p class="text-gray-600 text-center">Role: Associate Professor</p>
-                        <p class="text-gray-600 text-center">Department: Mathematics</p>
-                        <button class="mt-6 w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 transform hover:-translate-y-1">Contact Staff</button>
-                    </div>
-                    <!-- Staff Profile 3 -->
-                    <div class="bg-white rounded-2xl shadow-lg p-6 w-80 mx-auto transform hover:scale-105 transition-transform duration-300">
-                        <div class="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 ring-4 ring-indigo-200">
-                            <img src="https://via.placeholder.com/150" alt="Staff Photo" class="w-full h-full object-cover">
-                        </div>
-                        <h2 class="text-2xl font-bold text-gray-800 text-center">Dr. Emily Chen</h2>
-                        <p class="text-gray-600 text-center">Role: Lecturer</p>
-                        <p class="text-gray-600 text-center">Department: Physics</p>
-                        <button class="mt-6 w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 transform hover:-translate-y-1">Contact Staff</button>
-                    </div>
-                </div>
-            </div>
+            
         </aside>
 
-        <!-- Main Content (Right, equal width) -->
-        <main class="w-1/2 p-8 flex items-center">
-            <div class="max-w-lg mx-auto space-y-8">
+        <!-- Main Content (Right on desktop, below on mobile) -->
+        <main class="w-full lg:w-1/2 p-6 lg:p-8 flex items-center bg-gray-100">
+            <div class="max-w-lg mx-auto space-y-8 w-full">
                 <!-- Upper Form Section (Academic Information) -->
-                <section class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <section class="bg-white glass-effect p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
                     {% if user_form.errors %}
-                    <div class="alert alert-danger">{{ user_form.errors }}</div>
+                        <div class="alert alert-danger bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg mb-4">{{ user_form.errors }}</div>
                     {% endif %}
                     {% if head_form.errors %}
-                    <div class="alert alert-danger">{{head_form.errors }}</div>
+                        <div class="alert alert-danger bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg mb-4">{{ head_form.errors }}</div>
                     {% endif %}
                     {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} mt-3" role="alert">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-                {%if not head_data%}
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Academic Information</h3>
-                    <form class="space-y-4"method='POST' enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {{user_form|crispy}}
-                        {{head_form|crispy}}
-                        <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Register</button>
-                    </form>
-                    {%else%}
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">University head already exists!</h3>
-                    {%endif%}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg mb-4" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% if not head_data %}
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Academic Information</h3>
+                        <form class="space-y-4" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ user_form|crispy }}
+                            {{ head_form|crispy }}
+                            <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Register</button>
+                        </form>
+                    {% else %}
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">University head already exists!</h3>
+                    {% endif %}
                 </section>
                 
                 <!-- Lower Form Section (Personal Information) -->
-                <section class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <section class="bg-white glass-effect p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
                     {% if user_form.errors %}
-                    <div class="alert alert-danger">{{ user_form.errors }}</div>
+                        <div class="alert alert-danger bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg mb-4">{{ user_form.errors }}</div>
                     {% endif %}
                     {% if department_form.errors %}
-                    <div class="alert alert-danger">{{department_form.errors }}</div>
+                        <div class="alert alert-danger bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg mb-4">{{ department_form.errors }}</div>
                     {% endif %}
                     {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} mt-3" role="alert">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg mb-4" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                     <h3 class="text-xl font-semibold text-gray-800 mb-4">Academic Information</h3>
-                    <form class="space-y-4"method='POST' enctype="multipart/form-data">
+                    <form class="space-y-4" method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
-                        {{user_form|crispy}}
-                        {{dept_form|crispy}}
+                        {{ user_form|crispy }}
+                        {{ dept_form|crispy }}
                         <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Register</button>
                     </form>
                 </section>
             </div>
         </main>
     </div>
-{%endblock%}
-
-
-
-
+{% endblock %}

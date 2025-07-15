@@ -12,7 +12,7 @@
     body {
         background: #f0f4f8 url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"%3E%3Cg fill="%23dfe6e9" fill-opacity="0.2"%3E%3Cpath d="M0 40L40 0H20L0 20z"/%3E%3C/g%3E%3C/svg%3E');
         min-height: 100vh;
-        padding: 40px;
+        padding: 40px 0 40px 0; /* Removed left padding to eliminate space */
         position: relative;
         overflow: hidden;
     }
@@ -60,7 +60,7 @@
 
     .container {
         max-width: 1400px;
-        margin: 0 auto 0; /* Removed top margin to reduce spacing after messages */
+        margin: 0 auto 0;
         display: flex;
         flex-direction: row;
         gap: 20px;
@@ -71,7 +71,7 @@
 
     .messages-container {
         max-width: 1400px;
-        margin: 40px auto 10px; /* Reduced margin from 80px to 40px (top) and 20px to 10px (bottom) */
+        margin: 40px auto 10px;
         padding: 15px;
         background: #ffffff;
         border-radius: 10px;
@@ -142,7 +142,7 @@
 
     .form-group label {
         display: block;
-        color: #000000; /* Black labels */
+        color: #000000;
         font-size: 14px;
         font-weight: 500;
         margin-bottom: 5px;
@@ -226,7 +226,7 @@
         }
 
         .messages-container {
-            margin: 40px 20px 10px; /* Adjusted for mobile */
+            margin: 40px 20px 10px;
         }
     }
 {% endblock style %}
@@ -287,4 +287,3 @@
         </div>
     </div>
 {% endblock %}
-

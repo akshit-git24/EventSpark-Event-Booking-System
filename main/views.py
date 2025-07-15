@@ -178,9 +178,6 @@ def Head_Register(request):
     context = {'user_form': user_form, 'head_form': head_form}
     return render(request, 'UniDashboard.html', context)     
  
-def student_registration(request):
-    ...
-
 def custom_login(request):
     uni_form=UniversityLoginForm()
     head_form = HeadLoginForm()
@@ -436,10 +433,26 @@ def approve_coordinator(request,coord_id):
     coord.save()
     messages.success(request, "Coordinator Approved successfully.They can now login to Coordinator Dashboard! ")
     return redirect('dashboard')
-
-    
+ 
 def about_page(request):
     return render(request, 'about.html')
     
-
+def register_student(request):
+    if request.method =="POST":
+        user_form=UserRegistrationForm(request.POST)
+        std_form=StudentForm(request.POST,request.FILES)
+        if user_form.is_valid() and std_form.is_valid():
+            user = user_form.save()
+            student = std_form.save(commit=False)
+            student.user=user
+            student.save()
+            login(request,user)
+            messages.success(request, 'University Event Head registered successfully!.Head can Log in now from Custom Login')
+            return render(request,'home.html')
+        else:
+            messages.error(request,"Invalid form! Enter the details accordingly.")
+    else:
+        user_form=UserRegistrationForm()
+        std_form=StudentForm()       
+    return render(request,'student_register.html',{'user_form':user_form,'std_form':std_form})
 

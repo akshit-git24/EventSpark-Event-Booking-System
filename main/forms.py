@@ -67,7 +67,7 @@ class EventCoordinatorForm(forms.ModelForm):
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
-        fields = ['student_id']
+        fields = ['university','photo','full_name','phone','student_id']
 
 
 class EventForm(forms.ModelForm):

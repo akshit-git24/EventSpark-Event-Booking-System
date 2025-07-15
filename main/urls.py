@@ -20,6 +20,8 @@ urlpatterns = [
     path('approve-coordinator/<int:coord_id>/', views.approve_coordinator, name='approve-coordinator'),
     path('coordinator-login/', views.coordinator_login, name='coordinator-login'),
     path('about/', views.about_page, name='about'),
+    path('register-student/', views.register_student, name='register_student'),
+    # path('about/', views.about_page, name='about'),
 ]
 
 if settings.DEBUG:
