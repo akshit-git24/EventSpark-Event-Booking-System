@@ -88,6 +88,7 @@ class Student(models.Model):
 class Event(models.Model):
     university = models.ForeignKey(University, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
+    about=models.CharField(max_length=255,default=None)
     created = models.DateTimeField(auto_now_add=True)
     start_date = models.DateField()
     start_time = models.TimeField()
@@ -95,6 +96,8 @@ class Event(models.Model):
     end_time = models.TimeField()
     banner = models.ImageField(upload_to='event_banners/', null=True, blank=True)
     fee = models.DecimalField(max_digits=10, decimal_places=2)
+    venue=models.CharField(default=None)
+    details=models.CharField(default=None)
     # is_approved = models.BooleanField(default=False)#FOR university head approval
     
     def __str__(self):

@@ -254,15 +254,17 @@ def coordinator_login(request):
             if user is not None:
                 try:
                     coordinator=EventCoordinator.objects.get(user=user,coord_id=coord_id,passkey=passkey)
-                    login(request,user)
-                    return redirect('dashboard')
+                    if coordinator.is_approved :
+                        login(request,user)
+                        return redirect('dashboard')
+                    else:
+                        messages.error(request,'Your id isnt appproved by the University Event head!')
                 except:
                     messages.error(request,'Invalid credentials for Coordinator Form!')
             else:
                 messages.error(request, 'Invalid username or password.')        
     else:
-       coord_form=CoordinatorLoginForm()
-       
+       coord_form=CoordinatorLoginForm() 
     return render(request,'customlog.html',{'coord_form':coord_form})          
 
 def loginstudent(request):
@@ -321,7 +323,8 @@ def dashboard(request):
     
     try:
         coordinator = EventCoordinator.objects.get(user=user)
-        return render(request, 'coordinator.html', {'coordinator': coordinator})
+        events=Event.objects.filter(university=coordinator.department.university)
+        return render(request, 'coordinator.html', {'coordinator': coordinator,'events':events})
     except EventCoordinator.DoesNotExist:
         pass
     try:
@@ -353,25 +356,25 @@ def delete_profile(request):
     user.delete()
     logout(request)
     return redirect('homepage')  
+
 ###########3
+
 def logout_view(request):
     logout(request) 
     return redirect("homepage")
 
 @login_required
 def create_event(request):
-    try:
-        university = University.objects.get(user=request.user)
-    except University.DoesNotExist:
-        messages.error(request, 'Only university users can create events.')
-        return redirect('dashboard')
-    if request.method == 'POST':
+    user = request.user
+    coordinator = EventCoordinator.objects.get(user=user)
+    if request.method == "POST":
         form = EventForm(request.POST, request.FILES)
         if form.is_valid():
             event = form.save(commit=False)
-            event.university = university
+            event.department = coordinator.department
+            event.university = coordinator.department.university
             event.save()
-            messages.success(request, 'Event created successfully!')
+            messages.success(request, "Event created successfully!")
             return redirect('dashboard')
     else:
         form = EventForm()

@@ -63,6 +63,8 @@
                     <p class="text-gray-600 text-sm sm:text-base"> Department Event Coordinator</p>
                     <p class="text-gray-600 text-sm sm:text-base">Department:{{coordinator.department.name}}y</p>
                     <p class="text-gray-600 text-sm sm:text-base">Email:{{coordinator.user.email}}</p>
+                    <p class="text-gray-600 text-sm sm:text-base">Coordinator ID:{{coordinator.coord_id}}</p>
+                    <p class="text-gray-600 text-sm sm:text-base">Coordinator Passkey:{{coordinator.passkey}}</p>
                     <p class="text-gray-600 text-sm sm:text-base">Phone:XXXXXXXXXXXX</p>
                     <button class="mt-4 bg-indigo-600 text-white px-4 sm:px-6 py-2 rounded-full hover:bg-indigo-700 transition-colors text-sm sm:text-base">Update Profile</button>
                 </div>
@@ -118,37 +120,34 @@
         <section id="events">
             <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
                 <h2 class="text-xl sm:text-2xl font-semibold text-indigo-800">Department Events</h2>
-                <button class="mt-2 sm:mt-0 bg-purple-600 text-white px-4 sm:px-6 py-2 rounded-full hover:bg-purple-700 transition-colors text-sm sm:text-base">Create Event</button>
+                <a href="/create-event"class="mt-2 sm:mt-0 bg-purple-600 text-white px-4 sm:px-6 py-2 rounded-full hover:bg-purple-700 transition-colors text-sm sm:text-base">Create Event</a>
             </div>
             <div class="relative">
                 <!-- Timeline Line (Hidden on Mobile) -->
                 <div class="hidden sm:block absolute left-4 top-0 h-full w-1 bg-indigo-300"></div>
                 <!-- Event Items -->
                 <div class="space-y-6">
+                    {%if events%}
+                    {%for event in events%}
                     <div class="relative bg-white rounded-xl shadow-lg p-4 sm:p-5 sm:ml-10">
                         <div class="hidden sm:block absolute -left-6 top-4 w-4 h-4 bg-indigo-500 rounded-full border-2 border-white"></div>
-                        <img src="https://via.placeholder.com/600x200?text=TechFest+2025" alt="TechFest Banner" class="w-full h-24 sm:h-32 object-cover rounded-t-lg mb-4">
-                        <h3 class="text-base sm:text-lg font-semibold text-gray-800">TechFest 2025</h3>
-                        <p class="text-gray-600 text-xs sm:text-sm">Date: 2025-08-15</p>
-                        <p class="text-gray-600 text-xs sm:text-sm">Loc: IT Translational Medicine Auditorium</p>
-                        <p class="text-gray-600 text-xs sm:text-sm">Annual tech festival showcasing student innovations.</p>
+                        <img src="{{event.banner.url}}" alt="TechFest Banner" class="w-full h-24 sm:h-32 object-cover rounded-t-lg mb-4">
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-800">{{event.name}}</h3>
+                        <p class="text-gray-600 text-xs sm:text-sm">Start Date: {{event.start_date}}</p>
+                        <p class="text-gray-600 text-xs sm:text-sm">Start time: {{event.start_time}}</p>
+                        <p class="text-gray-600 text-xs sm:text-sm">End Date: {{event.end_date}}</p>
+                        <p class="text-gray-600 text-xs sm:text-sm">End Time: {{event.end_time}}</p>
+                        <p class="text-gray-600 text-xs sm:text-sm">{{event.about}}</p>
+                        <p class="text-gray-600 text-xs sm:text-sm">Venue:{{event.venue}}</p>
                         <div class="mt-3 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                             <button class="bg-indigo-600 text-white px-3 sm:px-4 py-1 rounded-full hover:bg-indigo-700 text-xs sm:text-sm">Details</button>
                             <button class="bg-green-600 text-white px-3 sm:px-4 py-1 rounded-full hover:bg-green-700 text-xs sm:text-sm">Manage</button>
                         </div>
                     </div>
-                    <div class="relative bg-white rounded-xl shadow-lg p-4 sm:p-5 sm:ml-10">
-                        <div class="hidden sm:block absolute -left-6 top-4 w-4 h-4 bg-indigo-500 rounded-full border-2 border-white"></div>
-                        <img src="https://via.placeholder.com/600x200?text=Coding+Hackathon" alt="Hackathon Banner" class="w-full h-24 sm:h-32 object-cover rounded-t-lg mb-4">
-                        <h3 class="text-base sm:text-lg font-semibold text-gray-800">Coding Hackathon</h3>
-                        <p class="text-gray-600 text-xs sm:text-sm">Date: 2025-09-10</p>
-                        <p class="text-gray-600 text-xs sm:text-sm">Loc: IT Lab 3</p>
-                        <p class="text-gray-600 text-xs sm:text-sm">24-hour coding competition for IT students.</p>
-                        <div class="mt-3 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                            <button class="bg-indigo-600 text-white px-3 sm:px-4 py-1 rounded-full hover:bg-indigo-700 text-xs sm:text-sm">Details</button>
-                            <button class="bg-green-600 text-white px-3 sm:px-4 py-1 rounded-full hover:bg-green-700 text-xs sm:text-sm">Manage</button>
-                        </div>
-                    </div>
+                    {%endfor%}
+                    {%else%}
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-800">No Events Yet!</h3>
+                    {%endif%}
                 </div>
             </div>
         </section>

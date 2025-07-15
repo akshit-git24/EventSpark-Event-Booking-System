@@ -73,12 +73,13 @@ class StudentForm(forms.ModelForm):
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ['name', 'start_date', 'start_time', 'end_date', 'end_time', 'banner', 'fee']
+        fields = ['name','about','details','start_date', 'start_time', 'end_date', 'end_time', 'banner', 'fee','venue']
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date'}),
             'end_date': forms.DateInput(attrs={'type': 'date'}),
             'start_time': forms.TimeInput(format='%H:%M:%S', attrs={'class': 'form-control', 'placeholder': 'HH:MM:SS'}),
             'end_time': forms.TimeInput(format='%H:%M:%S', attrs={'class': 'form-control', 'placeholder': 'HH:MM:SS'}),
+            'address': forms.Textarea(attrs={'rows': 3})
         }
     
 
