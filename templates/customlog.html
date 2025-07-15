@@ -279,19 +279,9 @@
         <!-- Guest Registration -->
         <div class="registration-section">
             <h2>Department Event coordinator</h2>
-            <form>
-                <div class="form-group">
-                    <label for="guest-name">Full Name</label>
-                    <input type="text" id="guest-name" placeholder="Enter your full name" required>
-                </div>
-                <div class="form-group">
-                    <label for="guest-affiliation">Affiliation</label>
-                    <input type="text" id="guest-affiliation" placeholder="Enter your affiliation (if any)">
-                </div>
-                <div class="form-group">
-                    <label for="guest-access">Access Code</label>
-                    <input type="text" id="guest-access" placeholder="Enter temporary access code" required>
-                </div>
+             <form method="post" action="{% url 'coordinator-login' %}">
+                {% csrf_token %}
+                {{ coord_form|crispy }}
                 <button type="submit" class="submit-btn">Login</button>
             </form>
         </div>

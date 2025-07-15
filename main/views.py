@@ -1,5 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .forms import UserRegistrationForm,UniversityRegistrationForm,UniversityLoginForm,HeadRegistrationForm,HeadLoginForm,StudentForm,EventForm,DepartmentLoginForm,DepartmentForm
+from .forms import (UserRegistrationForm,UniversityRegistrationForm,
+UniversityLoginForm,HeadRegistrationForm,HeadLoginForm,StudentForm,
+EventForm,DepartmentLoginForm,DepartmentForm,EventCoordinatorForm,CoordinatorLoginForm)
 from django.contrib import messages
 from .models import University,Head,Department,EventCoordinator,Student
 from django.contrib.auth import login,logout
@@ -114,21 +116,33 @@ def university_dashboard(request,university):
         return render(request, 'UniDashboard.html', context) 
                    
     departments=Department.objects.filter(university=university)
+    students = Student.objects.filter(university=university)  # <-- Add this line
     if request.method == "POST":
         dept_form = DepartmentForm(request.POST, request.FILES)
         user_form = UserRegistrationForm(request.POST)
         if dept_form.is_valid() and user_form.is_valid():
             user = user_form.save()
+            used_numbers = set(Department.objects.values_list('uni_id', flat=True))
+            while True:
+                num = random.randint(1000000000, 9999999999)  #10
+                if num not in used_numbers:
+                    used_numbers.add(num)
+                    print(num)
+                    break
+            chars = string.ascii_letters + string.digits
+            password = ''.join(random.choice(chars) for _ in range(10))  
             department = dept_form.save(commit=False)
             department.university = university
             department.user = user
+            department.department_id = num
+            department.passkey = password
             department.save()
             messages.success(request, "Department created successfully!")
             return redirect('dashboard')
     else:
         dept_form = DepartmentForm()
         user_form = UserRegistrationForm()
-    context = {'dept_form': dept_form,'departments':departments,'head_data':head_data,'user_form':user_form}
+    context = {'dept_form': dept_form,'departments':departments,'head_data':head_data,'user_form':user_form, 'students': students}  # <-- Add students to context
     return render(request, 'UniDashboard.html', context)
 
 @login_required   
@@ -171,8 +185,9 @@ def custom_login(request):
     uni_form=UniversityLoginForm()
     head_form = HeadLoginForm()
     dept_form = DepartmentLoginForm()
+    coord_form=CoordinatorLoginForm()
     messages.error(request, "🛑Only Staff login allowed!🛑")
-    return render(request,'customlog.html',{'uni_form':uni_form,'head_form':head_form,'dept_form':dept_form})
+    return render(request,'customlog.html',{'uni_form':uni_form,'head_form':head_form,'dept_form':dept_form,'coord_form':coord_form})
 
 @login_required
 def delete_head(request, head_id):
@@ -196,7 +211,7 @@ def Head_login(request):
                     try:
                         head = Head.objects.get(user=user, head_id=uni_id, passkey=passkey)
                         login(request, user)
-                        return render(request,'head.html',{'head_details':head})
+                        return redirect('dashboard')
                     except Head.DoesNotExist:
                         messages.error(request, 'Invalid credentials.')
             else:
@@ -218,7 +233,7 @@ def Department_login(request):
                 try:
                     department = Department.objects.get(user=user, department_id=department_id, passkey=passkey)
                     login(request, user)
-                    return render(request, 'department.html', {'department': department})
+                    return redirect('dashboard')
                 except Department.DoesNotExist:
                     messages.error(request, 'Invalid credentials.')
             else:
@@ -228,7 +243,27 @@ def Department_login(request):
     return render(request, 'customlog.html', {'dept_form': dept_form})
 
 def coordinator_login(request):
-    ...
+    if request.method=="POST":
+       coord_form=CoordinatorLoginForm(request.POST)
+       if coord_form.is_valid():
+            username = coord_form.cleaned_data['username']
+            password = coord_form.cleaned_data['password']
+            coord_id = coord_form.cleaned_data['coord_id']
+            passkey = coord_form.cleaned_data['passkey'] 
+            user=authenticate(request, username=username , password=password)
+            if user is not None:
+                try:
+                    coordinator=EventCoordinator.objects.get(user=user,coord_id=coord_id,passkey=passkey)
+                    login(request,user)
+                    return redirect('dashboard')
+                except:
+                    messages.error(request,'Invalid credentials for Coordinator Form!')
+            else:
+                messages.error(request, 'Invalid username or password.')        
+    else:
+       coord_form=CoordinatorLoginForm()
+       
+    return render(request,'customlog.html',{'coord_form':coord_form})          
 
 def loginstudent(request):
     if request.method == 'POST':
@@ -268,22 +303,25 @@ def dashboard(request):
         return university_dashboard(request,university)
     except University.DoesNotExist:
         pass
-    
+
     try:
         head_details = Head.objects.get(user=user)
-        return render(request, 'head.html', {'head_details': head_details})
+        students = Student.objects.filter(university=head_details.university)
+        departments = Department.objects.filter(university=head_details.university)
+        coordinators = EventCoordinator.objects.filter(is_approved=False,department__in=departments)
+        return render(request, 'head.html', {'head_details': head_details, 'students': students, 'coordinators': coordinators})
     except Head.DoesNotExist:
         pass
-    
+
     try:
         department = Department.objects.get(user=user)
-        return render(request, 'department.html', {'department': department})
+        return department_dashboard(request,department)
     except Department.DoesNotExist:
         pass
     
     try:
         coordinator = EventCoordinator.objects.get(user=user)
-        return render(request, 'coordinator_dashboard.html', {'coordinator': coordinator})
+        return render(request, 'coordinator.html', {'coordinator': coordinator})
     except EventCoordinator.DoesNotExist:
         pass
     try:
@@ -315,7 +353,7 @@ def delete_profile(request):
     user.delete()
     logout(request)
     return redirect('homepage')  
-
+###########3
 def logout_view(request):
     logout(request) 
     return redirect("homepage")
@@ -348,7 +386,57 @@ def university_events(request):
         return redirect('dashboard')
     events = Event.objects.filter(university=university).order_by('-created')
     return render(request, 'event.html', {'events': events})
-    
+
+@login_required
+def department_dashboard(request,department):
+    try:
+        coord_data = EventCoordinator.objects.get(department=department)
+    except:
+          coord_data = None
+          if request.method == 'POST':
+                user_form = UserRegistrationForm(request.POST)
+                coordinator_form = EventCoordinatorForm(request.POST, request.FILES)
+                if user_form.is_valid() and coordinator_form.is_valid():
+                    user = user_form.save()
+                    used_numbers = set(EventCoordinator.objects.values_list('coord_id', flat=True))
+                    while True:
+                        num = random.randint(10000000, 99999999)  #13
+                        if num not in used_numbers:
+                            used_numbers.add(num)
+                            print(num)
+                            break
+                    chars = string.ascii_letters + string.digits
+                    password = ''.join(random.choice(chars) for _ in range(8))  
+                    coordinator = coordinator_form.save(commit=False)
+                    coordinator.user = user
+                    coordinator.department = department
+                    coordinator.coord_id = num
+                    coordinator.passkey = password
+                    coordinator.save()
+                    messages.success(request, 'Event coordinator registered successfully!,Waiting for Head Approval🤗')
+                    return redirect('dashboard')
+                else:
+                    print("user_form errors:", user_form.errors)
+                    print("coordinator_form errors:", coordinator_form.errors)
+                    messages.error(request, "Form is not valid. Enter your details accordingly!")
+          else:
+                user_form = UserRegistrationForm()
+                coordinator_form = EventCoordinatorForm()
+          context = {'user_form': user_form, 'coordinator_form': coordinator_form}
+          return render(request, '.html', context) 
+    return render(request, 'department.html', {'department':department,'coord_data':coord_data})
+
+@login_required
+def approve_coordinator(request,coord_id):
+    coord = get_object_or_404(EventCoordinator,coord_id=coord_id)
+    coord.is_approved=True
+    coord.save()
+    messages.success(request, "Coordinator Approved successfully.They can now login to Coordinator Dashboard! ")
+    return redirect('dashboard')
+
 def head_dashboard(request):
     head_details=Head.objects.get(user=request.user)
+    
+def about_page(request):
+    return render(request, 'about.html')
     

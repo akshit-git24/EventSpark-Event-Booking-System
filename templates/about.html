@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+{%block title%}About EventSpark{%endblock title%}
+{%block  style%}
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: rgba(26, 26, 46, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            text-align: center;
+            color: #00d4ff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .lead {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        h3 {
+            color: #00d4ff;
+            border-bottom: 2px solid #00d4ff;
+            padding-bottom: 5px;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        ul li {
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR4AWL4//8/Q0z8GAwPj/AAoIAvA0GqACxQLUBHnAHqCuQU2xWYy4ADn6lQ6L0LeZglQJAFywwFOS4iWpH+0AAAAASUVORK5CYII=') no-repeat left 5px;
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        a {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    {%endblock style%}
+{%block content%}
+    <div class="container">
+        <h1>About EventSpark</h1>
+        <p class="lead">Welcome to <strong>EventSpark</strong> – your one-stop platform for managing university events, departments, coordinators, and students efficiently!</p>
+        <hr style="border: 0; height: 1px; background: #00d4ff; opacity: 0.3;">
+        <h3>What is EventSpark?</h3>
+        <p>EventSpark is a comprehensive event management system designed for universities and colleges. It streamlines the process of event creation, department and coordinator management, student registrations, and more. Our platform ensures smooth collaboration between university admins, department heads, event coordinators, and students.</p>
+        <h3>Key Features</h3>
+        <ul>
+            <li>University, Department, Head, Coordinator, and Student registration and login</li>
+            <li>Event creation and management</li>
+            <li>Approval workflows for users and events</li>
+            <li>Document and profile photo uploads</li>
+            <li>Role-based dashboards</li>
+            <li>Easy-to-use interface</li>
+        </ul>
+        <h3>Contact & Credits</h3>
+        <p>Developed by the EventSpark Team.<br>
+        For feedback or support, contact us at <a href="mailto:support@eventspark.com">support@eventspark.com</a>.</p>
+    </div>
+{%endblock%}

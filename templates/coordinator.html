@@ -5,75 +5,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coordinator Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Hide checkbox */
+        #nav-toggle {
+            display: none;
+        }
+        /* Show dropdown when checkbox is checked */
+        #nav-toggle:checked ~ .nav-menu {
+            max-height: 200px;
+            opacity: 1;
+            visibility: visible;
+        }
+        .nav-menu {
+            max-height: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease, visibility 0s linear 0.3s;
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body class="bg-gradient-to-br from-purple-100 to-indigo-200 font-sans min-h-screen">
-    <!-- Top Navigation -->
-    <nav class="bg-indigo-900 text-white p-4 sticky top-0 shadow-lg">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold">Coordinator Hub</h1>
-            <div class="space-x-6">
-                <a href="#profile" class="hover:text-indigo-300 transition-colors">Profile</a>
-                <a href="#students" class="hover:text-indigo-300 transition-colors">Students</a>
-                <a href="#events" class="hover:text-indigo-300 transition-colors">Events</a>
+    <!-- Navigation -->
+    <nav class="bg-indigo-900 text-white p-4 sticky top-0 shadow-lg z-50">
+        <div class="container mx-auto flex justify-between items-center relative">
+            <h1 class="text-xl font-bold">TechSpark⚡</h1>
+            <div class="md:flex space-x-6 hidden">
+                <a href="/" class="hover:text-indigo-300 transition-colors">Home</a>
+                <a href="/about" class="hover:text-indigo-300 transition-colors">About</a>
+                <a href="/dashboard" class="hover:text-indigo-300 transition-colors">Dasboard</a>
+                <a href="/logout" class="hover:text-indigo-300 transition-colors">Logout</a>
+            </div>
+            <label for="nav-toggle" class="md:hidden cursor-pointer z-50">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </label>
+            <input type="checkbox" id="nav-toggle" class="hidden">
+            <div class="nav-menu md:hidden absolute top-full left-0 w-full bg-indigo-900 p-4 space-y-2">
+                <a href="/" class="block hover:text-indigo-300 transition-colors">Home</a>
+                <a href="/about" class="block hover:text-indigo-300 transition-colors">About</a>
+                <a href="/dashboard" class="block hover:text-indigo-300 transition-colors">Dashboard</a>
+                <a href="/logout" class="block hover:text-indigo-300 transition-colors">Logout</a>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="container mx-auto p-6">
+    <div class="container mx-auto p-4 sm:p-6 pt-16 sm:pt-20">
         <!-- Profile Section -->
-        <section id="profile" class="mb-10">
-            <h2 class="text-2xl font-semibold text-indigo-800 mb-4">Coordinator Profile</h2>
-            <div class="bg-white rounded-xl shadow-lg p-6 max-w-md mx-auto transform hover:scale-105 transition-transform">
+        <section id="profile" class="mb-8 sm:mb-10">
+            <h2 class="text-xl sm:text-2xl font-semibold text-indigo-800 mb-4">Coordinator Profile</h2>
+            <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 max-w-md mx-auto transform hover:scale-105 transition-transform">
                 <div class="flex flex-col items-center">
-                    <img src="https://via.placeholder.com/120" alt="Profile Picture" class="w-32 h-32 rounded-full mb-4 border-4 border-indigo-500">
-                    <h3 class="text-xl font-bold text-gray-800">Jane Wilson</h3>
-                    <p class="text-gray-600">Event Coordinator</p>
-                    <p class="text-gray-600">Department: Information Technology</p>
-                    <p class="text-gray-600">Email: jane.wilson@university.edu</p>
-                    <p class="text-gray-600">Phone: +1 (123) 456-7891</p>
-                    <button class="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition-colors">Update Profile</button>
+                    <img src="{{coordinator.photo.url}}" alt="Profile Picture" class="w-24 sm:w-32 h-24 sm:h-32 rounded-full mb-4 border-4 border-indigo-500">
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-800">{{coordinator.name}}</h3>
+                    <p class="text-gray-600 text-sm sm:text-base"> Department Event Coordinator</p>
+                    <p class="text-gray-600 text-sm sm:text-base">Department:{{coordinator.department.name}}y</p>
+                    <p class="text-gray-600 text-sm sm:text-base">Email:{{coordinator.user.email}}</p>
+                    <p class="text-gray-600 text-sm sm:text-base">Phone:XXXXXXXXXXXX</p>
+                    <button class="mt-4 bg-indigo-600 text-white px-4 sm:px-6 py-2 rounded-full hover:bg-indigo-700 transition-colors text-sm sm:text-base">Update Profile</button>
                 </div>
             </div>
         </section>
 
         <!-- Department Students Section -->
-        <section id="students" class="mb-10">
-            <h2 class="text-2xl font-semibold text-indigo-800 mb-4">Department Students</h2>
+        <section id="students" class="mb-8 sm:mb-10">
+            <h2 class="text-xl sm:text-2xl font-semibold text-indigo-800 mb-4">Department Students</h2>
             <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
+                    <table class="w-full text-xs sm:text-sm">
                         <thead class="bg-indigo-100 text-indigo-800">
                             <tr>
-                                <th class="px-4 py-3 text-left font-medium">ID</th>
-                                <th class="px-4 py-3 text-left font-medium">Name</th>
-                                <th class="px-4 py-3 text-left font-medium">Course</th>
-                                <th class="px-4 py-3 text-left font-medium">Year</th>
-                                <th class="px-4 py-3 text-left font-medium">Contact</th>
-                                <th class="px-4 py-3 text-left font-medium">Actions</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left font-medium">ID</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left font-medium">Name</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left font-medium">Course</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left font-medium">Year</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left font-medium">Contact</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left font-medium">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr class="border-b hover:bg-indigo-50">
-                                <td class="px-4 py-3">IT001</td>
-                                <td class="px-4 py-3">Alice Smith</td>
-                                <td class="px-4 py-3">BSc Computer Science</td>
-                                <td class="px-4 py-3">3rd Year</td>
-                                <td class="px-4 py-3">alice.smith@university.edu</td>
-                                <td class="px-4 py-3">
-                                    <button class="text-indigo-600 hover:underline text-sm">View</button>
-                                    <button class="ml-2 text-green-600 hover:underline text-sm">Email</button>
+                                <td class="px-2 sm:px-4 py-2 sm:py-3">IT001</td>
+                                <td class="px-2 sm:px-4 py-2 sm:py-3">Alice Smith</td>
+                                <td class="px-2 sm:px-4 py-2 sm:py-3">BSc Computer Science</td>
+                                <td class="px-2 sm:px-4 py-2 sm:py-3">3rd Year</td>
+                                <td class="px-2 sm:px-4 py-2 sm:py-3">alice.smith@university.edu</td>
+                                <td class="px-2 sm:px-4 py-2 sm:py-3 flex flex-col sm:flex-row gap-2">
+                                    <button class="text-indigo-600 hover:underline text-xs sm:text-sm">View</button>
+                                    <button class="text-green-600 hover:underline text-xs sm:text-sm">Email</button>
                                 </td>
                             </tr>
                             <tr class="border-b hover:bg-indigo-50">
-                                <td class="px-4 py-3">IT002</td>
-                                <td class="px-4 py-3">Bob Johnson</td>
-                                <td class="px-4 py-3">BSc Information Technology</td>
-                                <td class="px-4 py-3">2nd Year</td>
-                                <td class="px-4 py-3">bob.johnson@university.edu</td>
-                                <td class="px-4 py-3">
-                                    <button class="text-indigo-600 hover:underline text-sm">View</button>
-                                    <button class="ml-2 text-green-600 hover:underline text-sm">Email</button>
+                                <td class="px-2 sm:px-4 py-2 sm:py-3">IT002</td>
+                                <td class="px-2 sm:px-4 py-2 sm:py-3">Bob Johnson</td>
+                                <td class="px-2 sm:px-4 py-2 sm:py-3">BSc Information Technology</td>
+                                <td class="px-2 sm:px-4 py-2 sm:py-3">2nd Year</td>
+                                <td class="px-2 sm:px-4 py-2 sm:py-3">bob.johnson@university.edu</td>
+                                <td class="px-2 sm:px-4 py-2 sm:py-3 flex flex-col sm:flex-row gap-2">
+                                    <button class="text-indigo-600 hover:underline text-xs sm:text-sm">View</button>
+                                    <button class="text-green-600 hover:underline text-xs sm:text-sm">Email</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -84,37 +116,37 @@
 
         <!-- Department Events Section (Timeline Style) -->
         <section id="events">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-semibold text-indigo-800">Department Events</h2>
-                <button class="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors">Create Event</button>
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
+                <h2 class="text-xl sm:text-2xl font-semibold text-indigo-800">Department Events</h2>
+                <button class="mt-2 sm:mt-0 bg-purple-600 text-white px-4 sm:px-6 py-2 rounded-full hover:bg-purple-700 transition-colors text-sm sm:text-base">Create Event</button>
             </div>
             <div class="relative">
-                <!-- Timeline Line -->
-                <div class="absolute left-4 top-0 h-full w-1 bg-indigo-300"></div>
+                <!-- Timeline Line (Hidden on Mobile) -->
+                <div class="hidden sm:block absolute left-4 top-0 h-full w-1 bg-indigo-300"></div>
                 <!-- Event Items -->
                 <div class="space-y-6">
-                    <div class="relative bg-white rounded-xl shadow-lg p-5 ml-10">
-                        <div class="absolute -left-6 top-4 w-4 h-4 bg-indigo-500 rounded-full border-2 border-white"></div>
-                        <img src="https://via.placeholder.com/600x200?text=TechFest+2025" alt="TechFest Banner" class="w-full h-32 object-cover rounded-t-lg mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800">TechFest 2025</h3>
-                        <p class="text-gray-600 text-sm">Date: 2025-08-15</p>
-                        <p class="text-gray-600 text-sm">Loc: IT Translational Medicine Auditorium</p>
-                        <p class="text-gray-600 text-sm">Annual tech festival showcasing student innovations.</p>
-                        <div class="mt-3 flex space-x-2">
-                            <button class="bg-indigo-600 text-white px-4 py-1 rounded-full hover:bg-indigo-700 text-sm">Details</button>
-                            <button class="bg-green-600 text-white px-4 py-1 rounded-full hover:bg-green-700 text-sm">Manage</button>
+                    <div class="relative bg-white rounded-xl shadow-lg p-4 sm:p-5 sm:ml-10">
+                        <div class="hidden sm:block absolute -left-6 top-4 w-4 h-4 bg-indigo-500 rounded-full border-2 border-white"></div>
+                        <img src="https://via.placeholder.com/600x200?text=TechFest+2025" alt="TechFest Banner" class="w-full h-24 sm:h-32 object-cover rounded-t-lg mb-4">
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-800">TechFest 2025</h3>
+                        <p class="text-gray-600 text-xs sm:text-sm">Date: 2025-08-15</p>
+                        <p class="text-gray-600 text-xs sm:text-sm">Loc: IT Translational Medicine Auditorium</p>
+                        <p class="text-gray-600 text-xs sm:text-sm">Annual tech festival showcasing student innovations.</p>
+                        <div class="mt-3 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                            <button class="bg-indigo-600 text-white px-3 sm:px-4 py-1 rounded-full hover:bg-indigo-700 text-xs sm:text-sm">Details</button>
+                            <button class="bg-green-600 text-white px-3 sm:px-4 py-1 rounded-full hover:bg-green-700 text-xs sm:text-sm">Manage</button>
                         </div>
                     </div>
-                    <div class="relative bg-white rounded-xl shadow-lg p-5 ml-10">
-                        <div class="absolute -left-6 top-4 w-4 h-4 bg-indigo-500 rounded-full border-2 border-white"></div>
-                        <img src="https://via.placeholder.com/600x200?text=Coding+Hackathon" alt="Hackathon Banner" class="w-full h-32 object-cover rounded-t-lg mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800">Coding Hackathon</h3>
-                        <p class="text-gray-600 text-sm">Date: 2025-09-10</p>
-                        <p class="text-gray-600 text-sm">Loc: IT Lab 3</p>
-                        <p class="text-gray-600 text-sm">24-hour coding competition for IT students.</p>
-                        <div class="mt-3 flex space-x-2">
-                            <button class="bg-indigo-600 text-white px-4 py-1 rounded-full hover:bg-indigo-700 text-sm">Details</button>
-                            <button class="bg-green-600 text-white px-4 py-1 rounded-full hover:bg-green-700 text-sm">Manage</button>
+                    <div class="relative bg-white rounded-xl shadow-lg p-4 sm:p-5 sm:ml-10">
+                        <div class="hidden sm:block absolute -left-6 top-4 w-4 h-4 bg-indigo-500 rounded-full border-2 border-white"></div>
+                        <img src="https://via.placeholder.com/600x200?text=Coding+Hackathon" alt="Hackathon Banner" class="w-full h-24 sm:h-32 object-cover rounded-t-lg mb-4">
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-800">Coding Hackathon</h3>
+                        <p class="text-gray-600 text-xs sm:text-sm">Date: 2025-09-10</p>
+                        <p class="text-gray-600 text-xs sm:text-sm">Loc: IT Lab 3</p>
+                        <p class="text-gray-600 text-xs sm:text-sm">24-hour coding competition for IT students.</p>
+                        <div class="mt-3 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                            <button class="bg-indigo-600 text-white px-3 sm:px-4 py-1 rounded-full hover:bg-indigo-700 text-xs sm:text-sm">Details</button>
+                            <button class="bg-green-600 text-white px-3 sm:px-4 py-1 rounded-full hover:bg-green-700 text-xs sm:text-sm">Manage</button>
                         </div>
                     </div>
                 </div>

@@ -17,6 +17,9 @@ urlpatterns = [
     path('create-event/', views.create_event, name='create-event'),
     path('events/', views.university_events, name='university-events'),
     path('department-login/', views.Department_login, name='department-login'),
+    path('approve-coordinator/<int:coord_id>/', views.approve_coordinator, name='approve-coordinator'),
+    path('coordinator-login/', views.coordinator_login, name='coordinator-login'),
+    path('about/', views.about_page, name='about'),
 ]
 
 if settings.DEBUG:

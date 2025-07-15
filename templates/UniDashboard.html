@@ -32,6 +32,9 @@
                     <p class="text-lg font-extrabold text-gray-800 text-center">Created at: <span class="font-light">{{head_data.created_at}}</span></p>
                     <p class="text-lg font-extrabold text-gray-800 text-center">Head ID(Confidential): <span class="font-light">{{head_data.head_id}}</span></p>
                     <p class="text-lg font-extrabold text-gray-800 text-center">Passkey(Confidential): <span class="font-light">{{head_data.passkey}}</span></p>
+                    {% if head_data.head_document %}
+                    <a href="{{head_data.head_document.url}}" class="text-lg font-extrabold text-gray-800 text-center">Verification Document<span class="font-light">View Document</span></p>
+                    {%endif%}
                     <!-- Edit Profile Button -->
                     <a class="mt-6 w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Edit Profile</a>
                     <br>

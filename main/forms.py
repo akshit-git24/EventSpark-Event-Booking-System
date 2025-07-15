@@ -48,6 +48,12 @@ class DepartmentLoginForm(forms.Form):
     department_id = forms.CharField(label='University Department ID :',help_text="This field is of integer type", max_length=13)
     passkey = forms.CharField(label='Unique Passkey :', max_length=20)
 
+class CoordinatorLoginForm(forms.Form):
+    username = forms.CharField(label='Username :', max_length=150)
+    password = forms.CharField(label='Password :', widget=forms.PasswordInput)
+    coord_id = forms.CharField(label='Coordinator ID :',help_text="This field is of integer type", max_length=13)
+    passkey = forms.CharField(label='Unique Passkey :', max_length=20)
+
 class DepartmentForm(forms.ModelForm):
     class Meta:
         model = Department
@@ -56,8 +62,8 @@ class DepartmentForm(forms.ModelForm):
 class EventCoordinatorForm(forms.ModelForm):
     class Meta:
         model = EventCoordinator
-        fields = ['name', 'department', 'user', 'coord_id', 'passkey', 'photo']
-
+        fields = ['name','contact', 'photo','document']
+        
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
