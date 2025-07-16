@@ -21,6 +21,8 @@ urlpatterns = [
     path('coordinator-login/', views.coordinator_login, name='coordinator-login'),
     path('about/', views.about_page, name='about'),
     path('register-student/', views.register_student, name='register_student'),
+    path("approve-event/<int:id>/", views.approve_event, name="approve_event"),
+    path("reject-event/<int:id>/", views.reject_event, name="reject_event")
     # path('about/', views.about_page, name='about'),
 ]
 

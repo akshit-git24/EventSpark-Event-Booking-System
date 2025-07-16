@@ -133,6 +133,35 @@
                 </div>
             </section>
 
+            <!-- Approve Events Section -->
+            <section id="approve-events" class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Approve Events</h2>
+                <div class="bg-white rounded-lg shadow-md p-4">
+                    <div class="grid grid-cols-1 gap-4">
+                        {% if events_pending %}
+                        {% for event in events_pending %}
+                        <div class="border p-4 rounded-lg">
+                            <div class="flex items-center mb-2">
+                                <img src="{{event.banner.url|default:'https://via.placeholder.com/300x100'}}" alt="Event Banner" class="w-10 h-10 rounded-full mr-3">
+                                <h3 class="text-lg font-semibold">{{event.title}}</h3>
+                            </div>
+                            <p class="text-gray-600 text-sm">Date: {{event.date}}</p>
+                            <p class="text-gray-600 text-sm">Location: {{event.location}}</p>
+                            <p class="text-gray-600 text-sm">Proposed by: {{event.proposed_by}}</p>
+                            <p class="text-gray-600 text-sm">Application Date: {{event.created_at}}</p>
+                            <div class="mt-4 flex flex-col gap-2">
+                                <a href="{%url 'approve-event' event.id%}" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm">Approve</a>
+                                <a href="{%url 'reject-event' event.id%}" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm">Reject</a>
+                            </div>
+                        </div>
+                        {%endfor%}
+                        {%else%}
+                        <h3 class="text-lg font-semibold">No Pending Event Approvals</h3>
+                        {%endif%}
+                    </div>
+                </div>
+            </section>
+
             <!-- Events Section -->
             <section id="events" class="mb-8">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-4">Events</h2>
@@ -164,7 +193,7 @@
         </div>
     </div>
 
-    <!-- Desktop View (Original Code with Photo and Events Added) -->
+    <!-- Desktop View -->
     <div class="hidden md:flex min-h-screen">
         <!-- Sidebar -->
         <div class="w-64 bg-blue-800 text-white p-6">
@@ -201,7 +230,7 @@
 
             <!-- Applied Students Section -->
             <section id="students" class="mb-12">
-                <h2 class="text-3xl font-semibold text-gray-800 mb-6">Applied Students</h2>
+                <h2 class="text-3xl balance font-semibold text-gray-800 mb-6">Applied Students</h2>
                 <div class="bg-white rounded-lg shadow-md overflow-x-auto">
                     <table class="min-w-full table-auto">
                         <thead class="bg-gray-200">
@@ -263,31 +292,66 @@
                 </div>
             </section>
 
+            <!-- Approve Events Section -->
+            <section id="approve-events" class="mb-12">
+                <h2 class="text-3xl font-semibold text-gray-800 mb-6">Approve Events</h2>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {%if pend_events%}
+                        {% for event in pend_events %}
+                        <div class="border p-4 rounded-lg">
+                            <div class="flex items-center mb-2">
+                                <img src="{{event.banner.url}}" alt="Event Banner" class="w-10 h-10 rounded-full mr-3">
+                                <h3 class="text-lg font-semibold">{{event.name}}</h3>
+                            </div>
+                            <p class="text-gray-600">Start Date: {{event.start_date}}</p>
+                            <p class="text-gray-600">Start time: {{event.start_time}}</p>
+                            <p class="text-gray-600">End Date: {{event.end_date}}</p>
+                            <p class="text-gray-600">End Time: {{event.end_time}}</p>
+                            <p class="text-gray-600">Location: {{event.venue}}</p>
+                            <p class="text-gray-600">Proposed by: {{event.university.name}}</p>
+                            <p class="text-gray-600">Application Date: {{event.created}}</p>
+                            <p class="text-gray-600">Department: {{event.department}}</p>
+                            <div class="mt-4">
+                                <a href="{%url 'approve_event' event.id%}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Approve</a>
+                                <a href="{%url 'reject_event' event.id%}" class="ml-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Reject</a>
+                            </div>
+                        </div>
+                        {%endfor%}
+                        {%else%}
+                        <h3 class="text-lg font-semibold">No Pending Event Approvals!</h3>
+                        {%endif%}
+                        
+                    </div>
+                </div>
+            </section>
+
             <!-- Events Section -->
             <section id="events">
                 <h2 class="text-3xl font-semibold text-gray-800 mb-6">Events</h2>
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="border p-4 rounded-lg">
-                            <img src="https://via.placeholder.com/300x100" alt="Tech Symposium Banner" class="w-full h-32 object-cover rounded-md mb-2">
-                            <h3 class="text-lg font-semibold">Tech Symposium 2025</h3>
-                            <p class="text-gray-600">Date: 2025-08-15</p>
-                            <p class="text-gray-600">Location: Main Auditorium</p>
-                            <p class="text-gray-600">Status: Upcoming</p>
+                            {%if events%}
+                            {%for event in events%}
+                            <img src="{{event.banner.url}}"class="w-full h-32 object-cover rounded-md mb-2">
+                            <h3 class="text-lg font-semibold">{{event.name}}</h3>
+                            <p class="text-gray-600">Start Date: {{event.start_date}} </p>
+                            <p class="text-gray-600">Start Time: {{event.start_time}} </p>
+                            <p class="text-gray-600">End Date: {{event.end_date}} </p>
+                            <p class="text-gray-600">End Time:{{event.end_time}} </p>
+                            <p class="text-gray-600">Location: {{event.venue}}</p>
+                            <p class="text-gray-600">Department: {{event.department}}</p>
+                            <p class="text-gray-600">Status: Approved</p>
                             <div class="mt-4">
-                                <button class="text-blue-600 hover:underline">View Details</button>
+                                <a href="#" class="text-blue-600 hover:underline">View Details</a>
+                            {%endfor%}
+                            {%else%}
+                            <h3 class="text-lg font-semibold">No Past Events for your University!</h3>
+                            {%endif%}
                             </div>
                         </div>
-                        <div class="border p-4 rounded-lg">
-                            <img src="https://via.placeholder.com/300x100" alt="Career Fair Banner" class="w-full h-32 object-cover rounded-md mb-2">
-                            <h3 class="text-lg font-semibold">Career Fair</h3>
-                            <p class="text-gray-600">Date: 2025-09-10</p>
-                            <p class="text-gray-600">Location: Campus Grounds</p>
-                            <p class="text-gray-600">Status: Planning</p>
-                            <div class="mt-4">
-                                <button class="text-blue-600 hover:underline">View Details</button>
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
             </section>
@@ -295,4 +359,3 @@
     </div>
 </body>
 </html>
-

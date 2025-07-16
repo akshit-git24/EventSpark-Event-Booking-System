@@ -54,6 +54,12 @@ class CoordinatorLoginForm(forms.Form):
     coord_id = forms.CharField(label='Coordinator ID :',help_text="This field is of integer type", max_length=13)
     passkey = forms.CharField(label='Unique Passkey :', max_length=20)
 
+class StudentLoginForm(forms.Form):
+    username = forms.CharField(label='Username :', max_length=150)
+    password = forms.CharField(label='Password :', widget=forms.PasswordInput)
+    student_id = forms.CharField(label='Student ID :',help_text="This field is of integer type", max_length=13)
+    university= forms.ModelChoiceField(queryset=University.objects.all(),label='University :', empty_label='Select University')
+
 class DepartmentForm(forms.ModelForm):
     class Meta:
         model = Department

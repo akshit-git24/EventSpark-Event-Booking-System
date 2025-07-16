@@ -160,7 +160,6 @@
     <div class="login-container">
         <form class="space-y-4"method='POST'>
             {% csrf_token %}
-            {{auth_form|crispy}}
             {{std_form|crispy}}
         <button class="login-btn">Sign In</button>
     </form>

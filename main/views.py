@@ -1,9 +1,9 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from .forms import (UserRegistrationForm,UniversityRegistrationForm,
 UniversityLoginForm,HeadRegistrationForm,HeadLoginForm,StudentForm,
-EventForm,DepartmentLoginForm,DepartmentForm,EventCoordinatorForm,CoordinatorLoginForm)
+EventForm,DepartmentLoginForm,DepartmentForm,EventCoordinatorForm,CoordinatorLoginForm,StudentLoginForm)
 from django.contrib import messages
-from .models import University,Head,Department,EventCoordinator,Student
+from .models import University,Head,Department,EventCoordinator,Student,Event
 from django.contrib.auth import login,logout
 import random
 import string
@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required,user_passes_test
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from .models import Event
+from django.http import HttpResponseForbidden
 # Create your views here.
 def homepage(request):
     return render(request,'home.html')
@@ -266,33 +267,32 @@ def coordinator_login(request):
 
 def loginstudent(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        student_id = request.POST.get('student_id')
-
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            try:
-                student = Student.objects.get(user=user)
-                university = student.university
-                student_with_id = Student.objects.get(university=university, student_id=student_id)
-                if student_with_id.user == user and student.is_approved:
-                    login(request, user)
-                    messages.success(request, "Welcome student!")
-                    return redirect('/')
-                else:
-                    messages.error(request, "Student ID does not match your account.")
-            except Student.DoesNotExist:
-                messages.error(request, "Invalid student or student ID.")
-        else:
-            messages.error(request, "Invalid username or password.")
-        auth_form = AuthenticationForm()
-        std_form = StudentForm()
-        return render(request, 'login.html', {'auth_form': auth_form, 'std_form': std_form})
+        std_form=StudentLoginForm(request.POST)
+        if std_form.is_valid():
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            student_id = request.POST.get('student_id')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                try:
+                    student = Student.objects.get(user=user)
+                    university = student.university
+                    student_with_id = Student.objects.get(university=university, student_id=student_id)
+                    if student_with_id.user == user and student.is_approved:
+                        login(request, user)
+                        messages.success(request, "Welcome student!")
+                        return redirect('dashboard')
+                    else:
+                        messages.error(request, "Student ID does not match your account.")
+                except Student.DoesNotExist:
+                    messages.error(request, "Invalid student or student ID.")
+            else:
+                messages.error(request, "Invalid username or password.")
+            std_form = StudentLoginForm()
+            return render(request, 'login.html', {'std_form': std_form})
     else:
-        auth_form = AuthenticationForm()
-        std_form = StudentForm()
-    return render(request, 'login.html', {'auth_form': auth_form, 'std_form': std_form})
+        std_form = StudentLoginForm()
+    return render(request, 'login.html',{'std_form': std_form})
     
 @login_required
 def dashboard(request):
@@ -308,7 +308,9 @@ def dashboard(request):
         students = Student.objects.filter(university=head_details.university)
         departments = Department.objects.filter(university=head_details.university)
         coordinators = EventCoordinator.objects.filter(is_approved=False,department__in=departments)
-        return render(request, 'head.html', {'head_details': head_details, 'students': students, 'coordinators': coordinators})
+        events=Event.objects.filter(university=head_details.university,is_approved=True)
+        pend_events=Event.objects.filter(university=head_details.university,is_approved=False)
+        return render(request,'head.html', {'head_details': head_details, 'students': students, 'coordinators': coordinators,'events':events,'pend_events':pend_events})   
     except Head.DoesNotExist:
         pass
 
@@ -320,16 +322,17 @@ def dashboard(request):
     
     try:
         coordinator = EventCoordinator.objects.get(user=user)
-        events=Event.objects.filter(university=coordinator.department.university)
+        events=Event.objects.filter(university=coordinator.department.university,is_approved=True)
         return render(request, 'coordinator.html', {'coordinator': coordinator,'events':events})
     except EventCoordinator.DoesNotExist:
         pass
     try:
         student = Student.objects.get(user=user)
-        return render(request, 'coordinator_dashboard.html', {'coordinator': coordinator})
+        events=Event.objects.filter(university=student.university,is_approved=True)
+        return render(request, 'student_dashboard.html',{'student': student,'events':events})
     except Student.DoesNotExist:
-         pass
-    messages.error(request,'🛑You are not authorized to access this page!,or you are a superuser.If super user,login to admin panel🛑')
+        pass
+    messages.error(request,'🛑You are not authorized to access this page!,or you are a superuser.If superuser,login to admin panel🛑')
     return redirect('homepage')
 
 @login_required
@@ -354,7 +357,20 @@ def delete_profile(request):
     logout(request)
     return redirect('homepage')  
 
-###########3
+##########33
+
+def approve_event(request,id):
+    event = get_object_or_404(Event, id=id)
+    event.is_approved = True
+    event.save()
+    messages.success(request, "Event Approved successfully✅")
+    return redirect("dashboard")
+
+def reject_event(request,id):
+    event = get_object_or_404(Event, id=id)
+    event.delete()
+    messages.success(request, "Event Rejected successfully✅")
+    return redirect("dashboard")
 
 def logout_view(request):
     logout(request) 

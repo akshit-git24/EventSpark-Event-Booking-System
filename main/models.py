@@ -77,7 +77,7 @@ class Student(models.Model):
     student_id=models.PositiveIntegerField(null=True, blank=True)
     document2 = models.FileField(upload_to='student_verified_head_document/',verbose_name="Verification Document",help_text="Upload your university verification document")
     photo = models.ImageField(upload_to='Student_Profile_photos/', null=True, blank=True)
-    department=models.ForeignKey(Department,on_delete=models.CASCADE,null=True)
+    department=models.ForeignKey(Department,on_delete=models.CASCADE,null=True,blank=True)
     class Meta:
         unique_together = ('university', 'student_id')
 
@@ -97,9 +97,17 @@ class Event(models.Model):
     fee = models.DecimalField(max_digits=10, decimal_places=2)
     venue=models.CharField(default=None)
     details=models.CharField(default=None)
-    # is_approved = models.BooleanField(default=False)#FOR university head approval
-    
+    is_approved = models.BooleanField(default=False)#FOR university head approval
+    department=models.ForeignKey(Department,on_delete=models.CASCADE,null=True,blank=True)
+
     def __str__(self):
         return f"{self.name} ({self.university.name})"
-
-
+ 
+class Ticket(models.Model):
+    event=models.ForeignKey(Event,on_delete=models.CASCADE)
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    ticket_id=models.PositiveIntegerField(unique=True)
+    time=models.DateTimeField()
+    available_tickets=models.PositiveIntegerField(default=0)
+    def __str__(self):
+        return self.ticket_id
