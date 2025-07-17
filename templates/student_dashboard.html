@@ -40,14 +40,17 @@
         <div id="profile" class="bg-white rounded-lg shadow p-6">
             <h2 class="text-xl font-semibold mb-4">Profile</h2>
             <div class="flex items-center mb-4">
-                <img src="https://via.placeholder.com/150" alt="Avatar" class="w-16 h-16 rounded-full mr-4" />
+                <img src="{{student.photo.url}}" alt="Avatar" class="w-16 h-16 rounded-full mr-4" />
                 <div>
-                    <h3 class="text-lg font-medium">John Doe</h3>
-                    <p class="text-gray-600">john.doe@university.edu</p>
+                    <h3 class="text-lg font-medium">{{student.full_name}}</h3>
+                    <p class="text-gray-600">Email: {{student.email}}</p>
                 </div>
             </div>
-            <p class="text-gray-700"><strong>Major:</strong> Computer Science</p>
-            <p class="text-gray-700"><strong>Year:</strong> Junior</p>
+            <p class="text-gray-700"><strong>University:</strong> {{student.university.name}}</p>
+            <p class="text-gray-700"><strong>Department:</strong> {{student.department.name}}</p>
+            <p class="text-gray-700"><strong>Approval:</strong> {{student.is_approved}}</p>
+            <p class="text-gray-700"><strong>Verified:</strong> {{student.is_verified}}</p>
+            <p class="text-gray-700"><strong>Student_id:</strong> {{student.student_id}}</p>
             <a href="#edit-profile" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                 Edit Profile
             </a>
@@ -57,24 +60,24 @@
         <div id="upcoming" class="bg-white rounded-lg shadow p-6 md:col-span-2">
             <h2 class="text-xl font-semibold mb-4">Upcoming Events</h2>
             <ul class="space-y-4">
+                {%if events%}
+                {%for event in events%}
                 <li class="border-b pb-2">
-                    <h3 class="text-lg font-medium">Career Fair 2025</h3>
-                    <p class="text-gray-600">Date: 2025-07-20</p>
-                    <p class="text-gray-600">Time: 10:00 AM</p>
-                    <p class="text-gray-600">Location: Main Hall</p>
-                    <a href="#register" class="mt-2 inline-block bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+                    <h3 class="text-lg font-medium">{{event.name}}</h3>
+                    <p class="text-gray-600">Start Date: {{event.start_date}}</p>
+                    <p class="text-gray-600">End Date: {{event.end_date}}</p>
+                    <p class="text-gray-600">Start Time: {{event.start_time}}</p>
+                    <p class="text-gray-600">End Time: {{event.end_time}}</p>
+                    <p class="text-gray-600">Location: {{event.venue}}</p>
+                    <a href="{%url 'register' event.id %}" class="mt-2 inline-block bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
                         Register
                     </a>
+                    
                 </li>
-                <li class="border-b pb-2">
-                    <h3 class="text-lg font-medium">Tech Talk: AI Innovations</h3>
-                    <p class="text-gray-600">Date: 2025-07-25</p>
-                    <p class="text-gray-600">Time: 2:00 PM</p>
-                    <p class="text-gray-600">Location: Lecture Room A</p>
-                    <a href="#register" class="mt-2 inline-block bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
-                        Register
-                    </a>
-                </li>
+                {%endfor%}
+                {%else%}
+                <h3 class="text-lg font-medium">No any events yet!</h3>
+                {%endif%}
             </ul>
         </div>
 

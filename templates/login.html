@@ -158,6 +158,7 @@
     {%endblock style%}
     {%block content%}
     <div class="login-container">
+        <h3 style="text-align:centre; color: #00b7eb; margin-left:90px;margin-bottom:30px;">Student Login</h3>
         <form class="space-y-4"method='POST'>
             {% csrf_token %}
             {{std_form|crispy}}

@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
+import uuid
 # Create your models here.
 class University(models.Model):
     name = models.CharField(max_length=200)
@@ -78,6 +80,7 @@ class Student(models.Model):
     document2 = models.FileField(upload_to='student_verified_head_document/',verbose_name="Verification Document",help_text="Upload your university verification document")
     photo = models.ImageField(upload_to='Student_Profile_photos/', null=True, blank=True)
     department=models.ForeignKey(Department,on_delete=models.CASCADE,null=True,blank=True)
+
     class Meta:
         unique_together = ('university', 'student_id')
 
@@ -99,15 +102,40 @@ class Event(models.Model):
     details=models.CharField(default=None)
     is_approved = models.BooleanField(default=False)#FOR university head approval
     department=models.ForeignKey(Department,on_delete=models.CASCADE,null=True,blank=True)
-
+    event_id=models.PositiveBigIntegerField(unique=True,null=True,blank=True)
+    tickets=models.PositiveIntegerField(null=True,blank=True)
+    
     def __str__(self):
         return f"{self.name} ({self.university.name})"
  
 class Ticket(models.Model):
     event=models.ForeignKey(Event,on_delete=models.CASCADE)
     user=models.ForeignKey(User,on_delete=models.CASCADE)
-    ticket_id=models.PositiveIntegerField(unique=True)
-    time=models.DateTimeField()
+    ticket_id=models.CharField(unique=True)
+    time=models.DateTimeField(null=True,blank=True)
     available_tickets=models.PositiveIntegerField(default=0)
+    registration_time = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    payment_status = models.CharField(max_length=20, choices=[
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+        ('refunded', 'Refunded')
+    ], default='pending')
+    payment_id = models.CharField( blank=True, null=True)
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+
+    def generate_ticket_id(self):
+
+        timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
+        random_part = str(uuid.uuid4().hex[:6].upper())
+        return f"TKT{timestamp}{random_part}"
+    
+    def save(self, *args, **kwargs):
+            if not self.ticket_id:
+                self.ticket_id = self.generate_ticket_id()
+            super().save(*args, **kwargs)
+
     def __str__(self):
-        return self.ticket_id
+        return f"{self.ticket_id} - {self.student.full_name} - {self.event.name}"
+

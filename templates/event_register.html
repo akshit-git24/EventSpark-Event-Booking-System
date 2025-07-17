@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register for {{ event.name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+            <!-- Event Header -->
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6">
+                <h1 class="text-3xl font-bold">{{ event.name }}</h1>
+                <p class="text-blue-100 mt-2">{{ event.about }}</p>
+            </div>
+            
+            <!-- Event Details -->
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-500">Date</p>
+                                <p class="font-medium">{{ event.start_date }} to {{ event.end_date }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-500">Time</p>
+                                <p class="font-medium">{{ event.start_time }} - {{ event.end_time }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-500">Venue</p>
+                                <p class="font-medium">{{ event.venue }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-500">Registration Fee</p>
+                                <p class="font-medium text-2xl text-green-600">₹{{ event.fee }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-500">Available Tickets</p>
+                                <p class="font-medium">{{ event.tickets_available }} / {{ event.max_tickets }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Event Description -->
+                <div class="mt-6">
+                    <h3 class="text-lg font-semibold mb-3">Event Details</h3>
+                    <p class="text-gray-700">{{ event.details }}</p>
+                </div>
+                
+                <!-- Registration Form -->
+                <div class="mt-8 p-6 bg-gray-50 rounded-lg">
+                    <h3 class="text-lg font-semibold mb-4">Registration Summary</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span>Student Name:</span>
+                            <span class="font-medium">{{ student.full_name }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Email:</span>
+                            <span class="font-medium">{{ student.email }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>University:</span>
+                            <span class="font-medium">{{ student.university.name }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Department:</span>
+                            <span class="font-medium">{{ student.department.name }}</span>
+                        </div>
+                        <hr class="my-2">
+                        <div class="flex justify-between text-lg font-semibold">
+                            <span>Total Amount:</span>
+                            <span class="text-green-600">₹{{ event.fee }}</span>
+                        </div>
+                    </div>
+                    
+                    <button id="register-btn" class="w-full mt-6 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-200 font-medium">
+                        Pay ₹{{ event.fee }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('register-btn').addEventListener('click', function() {
+            // Disable button to prevent multiple clicks
+            this.disabled = true;
+            this.innerHTML = 'Processing...';
+            
+            // Create payment order
+            fetch(`{% url 'payment' event.id %}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    this.disabled = false;
+                    this.innerHTML = ' Pay ₹ {{event.fee }}';
+                    return;
+                }
+                
+                // Initialize Razorpay checkout
+                var options = {
+                    "key": "{{ razorpay_key }}",
+                    "amount": data.amount,
+                    "currency": data.currency,
+                    "order_id": data.order_id,
+                    "name": "{{ event.name }}",
+                    "description": "Event Registration",
+                    "image": "/static/logo.png", // Add your logo path
+                    "handler": function (response) {
+                        // Verify payment
+                        fetch('/verify-payment/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.href = `/payment-success/${data.ticket_id}/`;
+                            } else {
+                                alert(data.message);
+                            }
+                        });
+                    },
+                    "prefill": {
+                        "name": "{{ student.full_name }}",
+                        "email": "{{ student.email }}",
+                        "contact": "{{ student.phone }}"
+                    },
+                    "notes": {
+                        "ticket_id": data.ticket_id
+                    },
+                    "theme": {
+                        "color": "#3B82F6"
+                    },
+                    "modal": {
+                        "ondismiss": function() {
+                            document.getElementById('register-btn').disabled = false;
+                            document.getElementById('register-btn').innerHTML = 'Pay ₹{{ event.fee }}';
+                        }
+                    }
+                };
+                
+                var rzp = new Razorpay(options);
+                rzp.open();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+                this.disabled = false;
+                this.innerHTML = 'Register & Pay ₹{{ event.fee }}';
+            });
+        });
+    </script>
+</body>
+</html>
+
+{% comment %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register for {{ event.name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-200 min-h-screen font-sans">
+    <div class="container mx-auto px-4 py-12">
+        <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+            <!-- Event Header -->
+            <div class="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white p-8">
+                <div class="absolute inset-0 bg-opacity-10 bg-black"></div>
+                <h1 class="text-4xl font-extrabold tracking-tight relative z-10">{{ event.name }}</h1>
+                <p class="mt-3 text-lg text-indigo-100 relative z-10">{{ event.about }}</p>
+            </div>
+            
+            <!-- Event Details -->
+            <div class="p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div class="flex items-start space-x-4">
+                            <svg class="w-6 h-6 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-500 font-medium">Date</p>
+                                <p class="text-lg font-semibold text-gray-800">{{ event.start_date }} to {{ event.end_date }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <svg class="w-6 h-6 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-500 font-medium">Time</p>
+                                <p class="text-lg font-semibold text-gray-800">{{ event.start_time }} - {{ event.end_time }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <svg class="w-6 h-6 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-500 font-medium">Venue</p>
+                                <p class="text-lg font-semibold text-gray-800">{{ event.venue }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start space-x-4">
+                            <svg class="w-6 h-6 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-500 font-medium">Registration Fee</p>
+                                <p class="text-2xl font-bold text-green-600">₹{{ event.fee }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <svg class="w-6 h-6 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-500 font-medium">Available Tickets</p>
+                                <p class="text-lg font-semibold text-gray-800">{{ event.tickets_available }} / {{ event.max_tickets }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Event Description -->
+                <div class="mt-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Event Details</h3>
+                    <p class="text-gray-600 leading-relaxed">{{ event.details }}</p>
+                </div>
+                
+                <!-- Registration Form -->
+                <div class="mt-10 p-6 bg-gray-50 rounded-xl shadow-inner">
+                    <h3 class="text-xl font-bold text-gray-800 mb-5">Registration Summary</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Student Name:</span>
+                            <span class="font-medium text-gray-800">{{ student.full_name }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Email:</span>
+                            <span class="font-medium text-gray-800">{{ student.email }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">University:</span>
+                            <span class="font-medium text-gray-800">{{ student.university.name }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Department:</span>
+                            <span class="font-medium text-gray-800">{{ student.department.name }}</span>
+                        </div>
+                        <hr class="border-gray-200 my-4">
+                        <div class="flex justify-between text-lg font-bold">
+                            <span class="text-gray-800">Total Amount:</span>
+                            <span class="text-green-600">₹{{ event.fee }}</span>
+                        </div>
+                    </div>
+                    
+                    <a href="{%url 'payment' event.id%}" class="w-full mt-6 bg-indigo-600 text-white py-3 px-6 rounded-lg hover:bg-indigo-700 transition duration-300 font-medium text-center inline-block">
+                         Pay ₹{{ event.fee }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> {% endcomment %}

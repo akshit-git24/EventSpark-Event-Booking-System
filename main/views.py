@@ -3,15 +3,22 @@ from .forms import (UserRegistrationForm,UniversityRegistrationForm,
 UniversityLoginForm,HeadRegistrationForm,HeadLoginForm,StudentForm,
 EventForm,DepartmentLoginForm,DepartmentForm,EventCoordinatorForm,CoordinatorLoginForm,StudentLoginForm)
 from django.contrib import messages
-from .models import University,Head,Department,EventCoordinator,Student,Event
+from .models import University,Head,Department,EventCoordinator,Student,Event,Ticket
 from django.contrib.auth import login,logout
 import random
 import string
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Event
 from django.http import HttpResponseForbidden
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+import razorpay
+import json
+from datetime import datetime
+
+client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET))
 # Create your views here.
 def homepage(request):
     return render(request,'home.html')
@@ -328,8 +335,7 @@ def dashboard(request):
         pass
     try:
         student = Student.objects.get(user=user)
-        events=Event.objects.filter(university=student.university,is_approved=True)
-        return render(request, 'student_dashboard.html',{'student': student,'events':events})
+        return student_dashboard(request,student)
     except Student.DoesNotExist:
         pass
     messages.error(request,'🛑You are not authorized to access this page!,or you are a superuser.If superuser,login to admin panel🛑')
@@ -356,8 +362,7 @@ def delete_profile(request):
     user.delete()
     logout(request)
     return redirect('homepage')  
-
-##########33
+###########################################################################
 
 def approve_event(request,id):
     event = get_object_or_404(Event, id=id)
@@ -471,4 +476,153 @@ def register_student(request):
         user_form=UserRegistrationForm()
         std_form=StudentForm()       
     return render(request,'student_register.html',{'user_form':user_form,'std_form':std_form})
+
+def student_dashboard(request,student):
+    events=Event.objects.filter(university=student.university,is_approved=True)
+    return render(request, 'student_dashboard.html',{'student': student,'events':events})
+
+@login_required
+def register_event(request,id):
+    """Display event registration page"""
+    try:
+        student = Student.objects.get(user=request.user)
+        event = get_object_or_404(Event, id=id, is_approved=True)
+
+        # Check if already registered
+        existing_ticket = Ticket.objects.filter(
+            user=student.user, event=event, payment_status='completed'
+        ).first()
+        if existing_ticket:
+            messages.warning(request, 'You are already registered for this event!')
+            return redirect('dashboard')
+        
+        # Check if event is full
+        
+        context = {'event': event,'student': student,'razorpay_key': settings.RAZORPAY_API_KEY}
+        return render(request, 'event_register.html', context)
+        
+    except Student.DoesNotExist:
+        messages.error(request, 'Only students can register for events.')
+        return redirect('dashboard')
+    
+@login_required
+def create_payment_order(request, id):
+    """Create Razorpay order for payment"""
+    if request.method=="POST":
+        try:
+            student = Student.objects.get(user=request.user)
+            event = get_object_or_404(Event, id=id, is_approved=True)
+            
+            # Check if student already registered
+            existing_ticket = Ticket.objects.filter(
+                user=student.user, 
+                event=event, 
+                payment_status='completed'
+            ).first()
+            
+            if existing_ticket:
+                return JsonResponse({'error': 'Already registered for this event'}, status=400)
+            
+            # Check if event is full
+        
+            
+            # Create pending ticket
+            ticket = Ticket.objects.create(
+                event=event,
+                user=student.user,
+                amount_paid=event.fee,
+                payment_status='pending'
+            )
+            
+            # Create Razorpay order
+            amount = int(event.fee * 100)  # Convert to paise
+            razorpay_order = client.order.create({
+                'amount': amount,
+                'currency': 'INR',
+                'payment_capture': '1',
+                'notes': {
+                    'ticket_id': ticket.ticket_id,
+                    'event_id': str(event.id),
+                    'student_id': str(student.student_id)
+                }
+            })
+            
+            # Update ticket with payment order ID
+            ticket.payment_id = razorpay_order['id']
+            ticket.save()
+            
+            return JsonResponse({'order_id': razorpay_order['id'],'amount': amount,'currency': 'INR','ticket_id': ticket.ticket_id})
+            
+        except Student.DoesNotExist:
+            return JsonResponse({'error': 'Student not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def verify_payment(request):
+    """Verify payment and complete registration"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            razorpay_order_id = data.get('razorpay_order_id')
+            razorpay_payment_id = data.get('razorpay_payment_id')
+            razorpay_signature = data.get('razorpay_signature')
+            
+            # Verify payment signature
+            params_dict = {
+                'razorpay_order_id': razorpay_order_id,
+                'razorpay_payment_id': razorpay_payment_id,
+                'razorpay_signature': razorpay_signature
+            }
+            
+            try:
+                client.utility.verify_payment_signature(params_dict)
+                
+                # Find the ticket and update payment status
+                ticket = Ticket.objects.get(payment_id=razorpay_order_id)
+                ticket.payment_status = 'completed'
+                ticket.save()
+                
+                # Update event tickets sold count
+                event = ticket.event
+                event.tickets_sold += 1
+                event.save()
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Payment successful! You are registered for the event.',
+                    'ticket_id': ticket.ticket_id
+                })
+                
+            except razorpay.errors.SignatureVerificationError:
+                # Payment verification failed
+                ticket = Ticket.objects.get(payment_id=razorpay_order_id)
+                ticket.payment_status = 'failed'
+                ticket.save()
+                
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Payment verification failed'
+                })
+                
+        except Ticket.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Ticket not found'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+
+
+
+
+
+
+
+
+
+
+
 

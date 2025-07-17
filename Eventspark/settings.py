@@ -132,5 +132,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 CRISPY_TEMPLATE_PACK = 'tailwind'
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+RAZORPAY_API_KEY = 'rzp_test_Nm6GTc7dRMMDl6'
+RAZORPAY_API_SECRET = 'nOmZOn3ZAFxE3WE7UTAdURiW'

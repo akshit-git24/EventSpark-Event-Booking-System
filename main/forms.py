@@ -58,7 +58,6 @@ class StudentLoginForm(forms.Form):
     username = forms.CharField(label='Username :', max_length=150)
     password = forms.CharField(label='Password :', widget=forms.PasswordInput)
     student_id = forms.CharField(label='Student ID :',help_text="This field is of integer type", max_length=13)
-    university= forms.ModelChoiceField(queryset=University.objects.all(),label='University :', empty_label='Select University')
 
 class DepartmentForm(forms.ModelForm):
     class Meta:
@@ -79,7 +78,7 @@ class StudentForm(forms.ModelForm):
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ['name','about','details','start_date', 'start_time', 'end_date', 'end_time', 'banner', 'fee','venue']
+        fields = ['name','about','details','start_date', 'start_time', 'end_date', 'end_time', 'banner', 'fee','venue','tickets']
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date'}),
             'end_date': forms.DateInput(attrs={'type': 'date'}),
