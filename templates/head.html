@@ -280,6 +280,40 @@
                 </div>
             </section>
 
+            <!-- Applied Students Section -->
+            <section id="students" class="mb-12">
+                <h2 class="text-3xl balance font-semibold text-gray-800 mb-6">Ructicated Students</h2>
+                <div class="bg-white rounded-lg shadow-md overflow-x-auto">
+                    <table class="min-w-full table-auto">
+                        <thead class="bg-gray-200">
+                            <tr>   
+                                <th class="px-6 py-3 text-left text-gray-600 font-medium">Student ID</th>
+                                <th class="px-6 py-3 text-left text-gray-600 font-medium">Name</th>
+                                <th class="px-6 py-3 text-left text-gray-600 font-medium">Department:</th>
+                                <th class="px-6 py-3 text-left text-gray-600 font-medium">Contact:</th>
+                                <th class="px-6 py-3 text-left text-gray-600 font-medium">Status</th>
+                                <th class="px-6 py-3 text-left text-gray-600 font-medium">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%for student in students%}
+                            {%if student.is_rusticated%}
+                            <tr class="border-b">
+                                <td class="px-6 py-4">{{student.student_id}}</td>
+                                <td class="px-6 py-4">{{student.full_name}}</td>
+                                <td class="px-6 py-4">{{student.department}}</td>
+                                <td class="px-6 py-4">{{student.phone}}</td>
+                                <td class="px-6 py-4 text-yellow-600">{{student.is_approved}}</td>        
+                                <td><a href="{%url 'rm-rusticate' student.student_id%}"class="ml-2 text-green-600 hover:underline">Remove Rustication</a></td>
+                            </tr>
+                            {%endif%}
+                            {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+           
+
             <!-- Approve Coordinators Section -->
             <section id="coordinators" class="mb-12">
                 <h2 class="text-3xl font-semibold text-gray-800 mb-6">Approve Coordinators</h2>

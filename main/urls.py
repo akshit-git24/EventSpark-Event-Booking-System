@@ -9,7 +9,6 @@ urlpatterns = [
     path('login/',views.loginstudent,name='login-student'),
     path('custom-login/',views.custom_login,name='custom-login'),
     path('university-login/', views.university_login, name='university-login'),
-    path('delete-profile/',views.delete_profile,name='delete-profile'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('logout/', views.logout_view, name='logout'),
     path('Head-login/', views.Head_login, name='head-login'),
@@ -31,6 +30,8 @@ urlpatterns = [
     path('assign_department/<int:student_id>/', views.assign_department, name='assign_department'),
     path('delete_department/<int:department_id>/', views.delete_department, name='delete_department'),
     path('verify_student/<int:student_id>/', views.verify_student, name='verify_student'),
+    path('rusticate/<int:student_id>/', views.rusticate, name='rusticate'),
+    path('rm-rusticate/<int:student_id>/', views.remove_rusticate, name='rm-rusticate'),
 ]
 
 if settings.DEBUG:

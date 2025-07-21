@@ -331,7 +331,8 @@ def dashboard(request):
     try:
         coordinator = EventCoordinator.objects.get(user=user)
         events=Event.objects.filter(university=coordinator.department.university,is_approved=True)
-        return render(request, 'coordinator.html', {'coordinator': coordinator,'events':events})
+        students=Student.objects.filter(department=coordinator.department)
+        return render(request, 'coordinator.html', {'coordinator': coordinator,'events':events,'students':students})   
     except EventCoordinator.DoesNotExist:
         pass
     try:
@@ -342,28 +343,7 @@ def dashboard(request):
     messages.error(request,'🛑You are not authorized to access this page!,or you are a superuser.If superuser,login to admin panel🛑')
     return redirect('homepage')
 
-@login_required
-def delete_profile(request):
-    user = request.user
-    try:
-        # Delete related profiles if they exist
-        if hasattr(user, 'student'):
-            user.student.delete()
-        if hasattr(user, 'head'):
-            user.head.delete()
-        if hasattr(user, 'university'):
-            user.university.delete()
-        if hasattr(user, 'department'):
-            user.department.delete()
-        if hasattr(user, 'eventcoordinator'):
-            user.eventcoordinator.delete()
-    except Exception as e:
-        # Optionally handle errors
-        pass
-    user.delete()
-    logout(request)
-    return redirect('homepage')  
-###########################################################################
+
 
 def approve_event(request,id):
     event = get_object_or_404(Event, id=id)
@@ -483,9 +463,15 @@ def student_dashboard(request,student):
     if not student.is_approved:
        messages.warning(request,"This University Account is pending for approval.")
        return render(request,'pending_student.html',{'student':student})
+    
     if not student.is_verified:
        messages.warning(request,"This Account is pending for approval by your University Event Head.")
        return render(request,'pending_veri.html',{'student':student})
+    
+    if student.is_rusticated:
+       messages.error(request,'You are Rusticated from using this website!')
+       return render(request,'rusticated.html',{'student':student})
+    
     events=Event.objects.filter(university=student.university,is_approved=True)
     return render(request, 'student_dashboard.html',{'student': student,'events':events})
 
@@ -742,3 +728,16 @@ def create_payment_order(request, id):
             return JsonResponse({'error': str(e)}, status=500)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
+def rusticate(request,student_id):
+    student=get_object_or_404(Student,student_id=student_id)
+    student.is_rusticated=True
+    student.save()
+    messages.success(request, "Student Rusticated successfully!")
+    return redirect('dashboard')
+
+def remove_rusticate(request,student_id):
+    student=get_object_or_404(Student,student_id=student_id)
+    student.is_rusticated=False
+    student.save()
+    messages.success(request, "Student Dashboard Restored successfully!")
+    return redirect('dashboard')

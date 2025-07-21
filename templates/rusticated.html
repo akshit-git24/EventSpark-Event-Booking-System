@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rustication Notice - University Name</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #1a3c5e;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        nav {
+            background-color: #2e5c8a;
+            padding: 1rem;
+        }
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .section {
+            background-color: white;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .section h2 {
+            font-size: 1.8rem;
+            margin-top: 0;
+            color: #1a3c5e;
+        }
+        .section p, .section ul {
+            line-height: 1.6;
+        }
+        .section ul {
+            margin-left: 1.5rem;
+        }
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .contact-form input, .contact-form textarea {
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .contact-form textarea {
+            resize: vertical;
+        }
+        .contact-form button {
+            background-color: #1a3c5e;
+            color: white;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .contact-form button:hover {
+            background-color: #2e5c8a;
+        }
+        footer {
+            background-color: #1a3c5e;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h1>University Name - Rustication Portal</h1>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Rustication Notice Section -->
+        <section id="notice" class="section">
+            <h2>Notice of Rustication</h2>
+            <p>Dear {{student.full_name}},</p>
+            <p>
+                You have been rusticated from using this website for the events of{{student.university.name}}. This decision was made by the department coordinator of your concerned department due to  violation of code of conduct or similar reasons.
+            </p>
+            <h3>Details</h3>
+            <ul>
+                <li><strong>Student ID:</strong>{{student.student_id}}</li>
+                <li><strong>Department:</strong>{{student.department.name}}</li>
+                <li><strong>Restrictions:</strong> You are not permitted to register for university events,Access dashboard,and to see tickets for  your registered events.</li>
+            </ul>
+        </section>
+
+        <!-- Reinstatement Conditions Section -->
+        <section id="conditions" class="section">
+            <h2>Reinstatement Conditions</h2>
+            <p>
+                To be eligible for reinstatement at {{student.university.name}}, you must meet the following conditions:
+            </p>
+            <ul>
+                <li>Contact the concerned department coordinator and ask the reason</li>
+                <li>Get a written document from the coordinator or Head of Department </li>
+                <li>With the documents,ask the University Event Head to remove the rustication</li>
+            </ul>
+            <p>
+                Upon fulfilling these conditions, you may able to access the dashboard and register for events again.
+            </p>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 [University Name]. All rights reserved.</p>
+    </footer>
+</body>
+</html>
