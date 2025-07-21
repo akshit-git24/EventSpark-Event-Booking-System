@@ -87,7 +87,7 @@
         /* Dashboard Container */
         .dashboard-container {
             max-width: 1200px;
-            margin: 100px auto 20px; /* Adjusted for navbar height */
+            margin: 100px auto 20px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             backdrop-filter: blur(10px);
@@ -139,7 +139,7 @@
 
         .banner-photo {
             width: 100%;
-            height: 300px; /* Increased to 300px for desktop */
+            height: 300px;
             object-fit: cover;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -216,7 +216,7 @@
         }
 
         .form-section .space-y-4 {
-            display: contents; /* Allow grid layout to take over */
+            display: contents;
         }
 
         .form-section .form-group {
@@ -250,7 +250,7 @@
         }
 
         .form-section button {
-            grid-column: 1 / -1; /* Span both columns */
+            grid-column: 1 / -1;
             width: 100%;
             padding: 12px;
             background: linear-gradient(45deg, #00d4ff, #4a69bd);
@@ -303,6 +303,71 @@
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
         }
 
+        /* Table Styles */
+        .student-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .student-table thead {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .student-table th {
+            padding: 12px 16px;
+            text-align: left;
+            color: #00d4ff;
+            font-weight: 600;
+            font-size: 14px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .student-table td {
+            padding: 12px 16px;
+            color: #e0e0e0;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .student-table tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .student-table select,
+        .student-table button {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .student-table button {
+            background: linear-gradient(45deg, #00d4ff, #4a69bd);
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .student-table button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .student-table a {
+            color: #00d4ff;
+            text-decoration: none;
+            margin-left: 8px;
+        }
+
+        .student-table a:hover {
+            text-decoration: underline;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .navbar {
@@ -357,15 +422,15 @@
 
             .banner-photo {
                 width: 100%;
-                height: 150px; /* Reduced for mobile responsiveness */
+                height: 150px;
             }
 
             .form-section {
-                grid-template-columns: 1fr; /* Single column on mobile */
+                grid-template-columns: 1fr;
             }
 
             .form-section button {
-                grid-column: 1; /* Reset to single column */
+                grid-column: 1;
             }
 
             .coordinator-exists {
@@ -382,6 +447,17 @@
 
             .coordinator-exists p {
                 font-size: 14px;
+            }
+
+            .student-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .student-table th,
+            .student-table td {
+                font-size: 12px;
+                padding: 8px;
             }
         }
     </style>
@@ -403,7 +479,7 @@
         <span class="menu-toggle">☰</span>
         <ul class="nav-links">
             <li><a href="/">Home</a></li>
-            <li><a href="#">About</a></li>
+            <li><a href="/about">About</a></li>
             <li><a href="/dashboard">Dashboard</a></li>
             <li><a href="/logout">logout</a></li>
         </ul>
@@ -444,7 +520,7 @@
                 <p><strong>Department:</strong> {{coord_data.department.name}}</p>
                 <p><strong>University:</strong> {{coord_data.department.university.name}}</p>
                 <p><strong>Coordinator ID:</strong> {{coord_data.coord_id}}</p>
-                <p><strong>University:</strong> {{coord_data.passkey}}</p>
+                <p><strong>Passkey:</strong> {{coord_data.passkey}}</p>
                 {% if coord_data.is_approved %}
                 <p><strong>Approval status:</strong> Approved</p>
                 {% else %}
@@ -455,426 +531,51 @@
         </div>
 
         <div class="section">
-            <h3>Tasks</h3>
+            <h3>Students</h3>
+            <table class="student-table">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Course</th>
+                        <th>Application Date</th>
+                        <th>Status</th>
+                        <th>Department</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.student_id }}</td>
+                        <td>{{ student.full_name }}</td>
+                        <td>{{ student.course }}</td>
+                        <td>{{ student.created_at }}</td>
+                        <td>
+                            {% if student.is_approved %}
+                            <span class="text-green-600">Approved</span>
+                            {% else %}
+                            <span class="text-yellow-600">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>{{student.department.name}}</td>
+                         
+                        <td>
+                            
+                            {% if not student.is_verified %}
+                            <a href="{% url 'verify_student' student.student_id %}" class="text-green-600 hover:underline">Accept</a>
+                            {% endif %}
+
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="section">
+            <h3>Events</h3>
             <p>No tasks assigned.</p>
         </div>
     </div>
 </body>
 </html>
-
-
-
-
-
-
-
-
-{% comment %} <!DOCTYPE html>
-<html lang="en">
-{%load crispy_forms_tags%}    
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Department Dashboard</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            min-height: 100vh;
-            padding: 0;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Navbar Styles */
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: linear-gradient(90deg, #1e3c72, #2a5298, #4a69bd);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .navbar .logo {
-            color: #fff;
-            font-size: 24px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .navbar .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 20px;
-        }
-
-        .navbar .nav-links li a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 16px;
-            transition: color 0.3s ease, transform 0.3s ease;
-        }
-
-        .navbar .nav-links li a:hover {
-            color: #00d4ff;
-            transform: scale(1.1);
-        }
-
-        .navbar .menu-toggle {
-            display: none;
-            font-size: 24px;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        .navbar .user-profile {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .navbar .user-profile:hover {
-            transform: rotate(360deg);
-        }
-
-        /* Dashboard Container */
-        .dashboard-container {
-            max-width: 1200px;
-            margin: 100px auto 20px; /* Adjusted for navbar height */
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            padding: 30px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            animation: fadeIn 1s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Profile Section */
-        .profile-section {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            margin-bottom: 30px;
-            padding: 25px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .profile-section:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .profile-photo {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 5px solid #00d4ff;
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
-            transition: transform 0.3s ease;
-        }
-
-        .profile-photo:hover {
-            transform: scale(1.05);
-        }
-
-        .banner-photo {
-            width: 100%;
-            height: 300px; /* Increased to 300px for desktop */
-            object-fit: cover;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
-        }
-
-        .banner-photo:hover {
-            transform: scale(1.02);
-        }
-
-        .profile-details {
-            flex: 1;
-            color: #fff;
-        }
-
-        .profile-details h2 {
-            color: #00d4ff;
-            font-size: 28px;
-            margin-bottom: 15px;
-            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(45deg, #00d4ff, #ff00ff, #00ffcc);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            animation: gradientShift 4s ease infinite;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .profile-details p {
-            color: #e0e0e0;
-            font-size: 16px;
-            margin: 8px 0;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Sections */
-        .section {
-            margin: 25px 0;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
-            transition: transform 0.3s ease;
-        }
-
-        .section:hover {
-            transform: translateY(-5px);
-        }
-
-        .section h3 {
-            color: #00d4ff;
-            font-size: 22px;
-            margin-bottom: 15px;
-            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
-        }
-
-        .section p {
-            color: #e0e0e0;
-            font-size: 16px;
-            line-height: 1.6;
-        }
-
-        /* Form Section */
-        .form-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .form-section .space-y-4 {
-            display: contents; /* Allow grid layout to take over */
-        }
-
-        .form-section .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-section label {
-            display: block;
-            color: #e0e0e0;
-            font-size: 14px;
-            margin-bottom: 5px;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-        }
-
-        .form-section input,
-        .form-section select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .form-section input:focus,
-        .form-section select:focus {
-            outline: none;
-            border-color: #00d4ff;
-            box-shadow: 0 0 5px rgba(0, 212, 255, 0.5);
-        }
-
-        .form-section button {
-            grid-column: 1 / -1; /* Span both columns */
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(45deg, #00d4ff, #4a69bd);
-            border: none;
-            border-radius: 5px;
-            color: #fff;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .form-section button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 212, 255, 0.5);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 10px 20px;
-            }
-
-            .navbar .logo {
-                font-size: 20px;
-            }
-
-            .navbar .nav-links {
-                display: none;
-                position: absolute;
-                top: 60px;
-                left: 0;
-                right: 0;
-                background: linear-gradient(90deg, #1e3c72, #2a5298);
-                flex-direction: column;
-                padding: 20px;
-                text-align: center;
-                transform: translateY(-100%);
-                transition: transform 0.3s ease;
-            }
-
-            .navbar .nav-links.active {
-                display: flex;
-                transform: translateY(0);
-            }
-
-            .navbar .nav-links li {
-                margin: 10px 0;
-            }
-
-            .navbar .menu-toggle {
-                display: block;
-            }
-
-            .dashboard-container {
-                margin: 80px auto 20px;
-                padding: 20px;
-            }
-
-            .profile-section {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .profile-photo {
-                width: 140px;
-                height: 140px;
-            }
-
-            .banner-photo {
-                width: 100%;
-                height: 150px; /* Reduced for mobile responsiveness */
-            }
-
-            .form-section {
-                grid-template-columns: 1fr; /* Single column on mobile */
-            }
-
-            .form-section button {
-                grid-column: 1; /* Reset to single column */
-            }
-        }
-    </style>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const menuToggle = document.querySelector('.menu-toggle');
-            const navLinks = document.querySelector('.nav-links');
-
-            menuToggle.addEventListener('click', () => {
-                navLinks.classList.toggle('active');
-            });
-        });
-    </script>
-</head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="logo">TechSpark</div>
-        <span class="menu-toggle">☰</span>
-        <ul class="nav-links">
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Announcements</a></li>
-            <li><a href="#">Tasks</a></li>
-        </ul>
-        <div class="user-profile">👤</div>
-    </nav>
-
-    <!-- Dashboard Container -->
-    <div class="dashboard-container">
-        <div class="profile-section">
-            <img src="{{department.Department_admin.url}}" alt="Profile Photo" class="profile-photo">
-            <div class="profile-details">
-                <h2>Department Name: {{department.name}}</h2>
-                <p><strong>University:</strong> {{department.university.name}}</p>
-                <p><strong>Email:</strong> {{department.user.email}}</p>
-                <p><strong>Role:</strong> Department Head</p>
-            </div>
-            <img src="https://online.gndu.ac.in/assets/images/home/infrastructure.jpg" alt="Banner Photo" class="banner-photo">
-        </div>
-
-        <div class="section">
-            {%if not coord_data%}
-            <h3>Coordinator Forms</h3>
-            <form class="space-y-4" method='POST' enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="form-section" enctype="multipart/form-data">
-                    {{user_form|crispy}}
-                    {{coordinator_form|crispy}}
-                
-                <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">Register</button>
-            </div>
-            </form>
-            {%else%}
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">University Coordinator exists!</h3>
-            <h5 class="text-xl font-semibold text-gray-800 mb-4">Here are the details of the coordinator</h5>
-            <p><strong>Name:</strong> {{coord_data.name}}</p>
-            <p><strong>Email:</strong> {{coord_data.user.email}}</p>
-            <p><strong>Role:</strong> Event Coordinator</p>
-            <p><strong>Department:</strong> {{coord_data.department.name}}</p>
-            <p><strong>University:</strong> {{coord_data.department.university.name}}</p>
-            {%if coord_data.is_approved%}
-            <p><strong>Approval status:</strong>Approved</p>
-            {%else%}
-            <p><strong>Approval status:</strong>Pending</p>
-            {%endif%}
-            {%endif%}
-        </div>
-
-        <div class="section">
-            <h3>Tasks</h3>
-            <p>No tasks assigned.</p>
-        </div>
-    </div>
-</body>
-</html> {% endcomment %}

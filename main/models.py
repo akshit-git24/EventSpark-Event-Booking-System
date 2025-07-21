@@ -70,16 +70,17 @@ class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     university = models.ForeignKey(University, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=200)
-    email = models.EmailField()
+    student_email = models.EmailField(blank=True, null=True)
     phone = models.CharField(max_length=10)
-    is_approved = models.BooleanField(default=False)#FOR department admin approval
+    is_approved = models.BooleanField(default=False)#FOR department head approval
     document = models.FileField(upload_to='student_documents/', null=True, blank=True)
-    is_verified = models.BooleanField(default=False)#FOR university head approval
+    is_verified = models.BooleanField(default=False)#FOR university admin approval
     created_at = models.DateTimeField(auto_now_add=True)
     student_id=models.PositiveIntegerField(null=True, blank=True)
     document2 = models.FileField(upload_to='student_verified_head_document/',verbose_name="Verification Document",help_text="Upload your university verification document")
     photo = models.ImageField(upload_to='Student_Profile_photos/', null=True, blank=True)
     department=models.ForeignKey(Department,on_delete=models.CASCADE,null=True,blank=True)
+
 
     class Meta:
         unique_together = ('university', 'student_id')
@@ -137,5 +138,5 @@ class Ticket(models.Model):
             super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.ticket_id} - {self.student.full_name} - {self.event.name}"
+        return f"{self.ticket_id} - {self.user.username} - {self.event.name}"
 

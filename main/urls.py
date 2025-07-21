@@ -25,6 +25,12 @@ urlpatterns = [
     path("reject-event/<int:id>/", views.reject_event, name="reject_event"),
     path("register-event/<int:id>/", views.register_event, name="register"),
     path("payment/<int:id>/create-order", views.create_payment_order, name="payment"),
+    path("approve-student/<int:student_id>/", views.approve_student, name="approve_student"),
+    path("reject-student/<int:student_id>/", views.reject_student, name="reject_student"),
+    path("my-tickets/", views.student_tickets, name="student_tickets"),
+    path('assign_department/<int:student_id>/', views.assign_department, name='assign_department'),
+    path('delete_department/<int:department_id>/', views.delete_department, name='delete_department'),
+    path('verify_student/<int:student_id>/', views.verify_student, name='verify_student'),
 ]
 
 if settings.DEBUG:

@@ -4,14 +4,14 @@ from django.contrib.auth.models import User
 from .models import University, Head, Department, EventCoordinator, Student, Event
 
 class UserRegistrationForm(UserCreationForm):
-    email=forms.EmailField(required=True)
-
+    email=forms.EmailField(required=True) 
     class Meta:
        model = User
        fields = ['username', 'email', 'password1', 'password2']
   
 
 class UniversityRegistrationForm(forms.ModelForm):
+    uni_document = forms.FileField(label='University Document :',help_text="Upload verification document with the payment status ScreenShot and Payment ID ", max_length=13)
     class Meta:
         model = University
         fields = ['name', 'address', 'contact_email', 'contact_phone', 'uni_document', 'photo','admin_photo']
@@ -60,6 +60,9 @@ class StudentLoginForm(forms.Form):
     student_id = forms.CharField(label='Student ID :',help_text="This field is of integer type", max_length=13)
 
 class DepartmentForm(forms.ModelForm):
+    name=forms.CharField(label='Department Name')
+    photo=forms.ImageField(label='Department Photo')
+    Department_admin=forms.ImageField(label='Department Admin photo')
     class Meta:
         model = Department
         fields = ['name', 'photo','Department_admin']
@@ -70,10 +73,15 @@ class EventCoordinatorForm(forms.ModelForm):
         fields = ['name','contact', 'photo','document']
         
 class StudentForm(forms.ModelForm):
+    student_email = forms.EmailField(required=False)
     class Meta:
         model = Student
-        fields = ['university','photo','full_name','phone','student_id']
+        fields = ['university','photo','full_name','student_email','phone','student_id','document']
 
+# class StudentVerify(forms.ModelForm):
+#     class Meta:
+#          model=Student
+#          fields=['document2']
 
 class EventForm(forms.ModelForm):
     class Meta:
@@ -85,7 +93,7 @@ class EventForm(forms.ModelForm):
             'start_time': forms.TimeInput(format='%H:%M:%S', attrs={'class': 'form-control', 'placeholder': 'HH:MM:SS'}),
             'end_time': forms.TimeInput(format='%H:%M:%S', attrs={'class': 'form-control', 'placeholder': 'HH:MM:SS'}),
             'address': forms.Textarea(attrs={'rows': 3})
-        }
+            }
     
 
 

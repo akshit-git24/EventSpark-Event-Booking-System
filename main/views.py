@@ -17,6 +17,7 @@ from django.conf import settings
 import razorpay
 import json
 from datetime import datetime
+from django.utils import timezone
 
 client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET))
 # Create your views here.
@@ -130,7 +131,7 @@ def university_dashboard(request,university):
         user_form = UserRegistrationForm(request.POST)
         if dept_form.is_valid() and user_form.is_valid():
             user = user_form.save()
-            used_numbers = set(Department.objects.values_list('uni_id', flat=True))
+            used_numbers = set(Department.objects.values_list('department_id', flat=True))
             while True:
                 num = random.randint(1000000000, 9999999999)  #10
                 if num not in used_numbers:
@@ -317,7 +318,7 @@ def dashboard(request):
         coordinators = EventCoordinator.objects.filter(is_approved=False,department__in=departments)
         events=Event.objects.filter(university=head_details.university,is_approved=True)
         pend_events=Event.objects.filter(university=head_details.university,is_approved=False)
-        return render(request,'head.html', {'head_details': head_details, 'students': students, 'coordinators': coordinators,'events':events,'pend_events':pend_events})   
+        return render(request,'head.html', {'head_details': head_details, 'students': students, 'coordinators': coordinators,'events':events,'pend_events':pend_events,'departments':departments})   
     except Head.DoesNotExist:
         pass
 
@@ -445,7 +446,8 @@ def department_dashboard(request,department):
                 coordinator_form = EventCoordinatorForm()
           context = {'user_form': user_form, 'coordinator_form': coordinator_form}
           return render(request, '.html', context) 
-    return render(request, 'department.html', {'department':department,'coord_data':coord_data})
+    students=Student.objects.filter(department=department)
+    return render(request, 'department.html', {'department':department,'coord_data':coord_data,'students':students})
 
 @login_required
 def approve_coordinator(request,coord_id):
@@ -478,54 +480,73 @@ def register_student(request):
     return render(request,'student_register.html',{'user_form':user_form,'std_form':std_form})
 
 def student_dashboard(request,student):
+    if not student.is_approved:
+       messages.warning(request,"This University Account is pending for approval.")
+       return render(request,'pending_student.html',{'student':student})
+    if not student.is_verified:
+       messages.warning(request,"This Account is pending for approval by your University Event Head.")
+       return render(request,'pending_veri.html',{'student':student})
     events=Event.objects.filter(university=student.university,is_approved=True)
     return render(request, 'student_dashboard.html',{'student': student,'events':events})
 
 @login_required
-def register_event(request,id):
-    """Display event registration page"""
+def register_event(request, id):
     try:
         student = Student.objects.get(user=request.user)
         event = get_object_or_404(Event, id=id, is_approved=True)
 
-        # Check if already registered
+        # Prevent double registration
         existing_ticket = Ticket.objects.filter(
             user=student.user, event=event, payment_status='completed'
         ).first()
         if existing_ticket:
             messages.warning(request, 'You are already registered for this event!')
             return redirect('dashboard')
-        
-        # Check if event is full
-        
+
+        # Prevent registration if no tickets are available
+        if event.tickets is not None and event.tickets <= 0:
+            messages.error(request, 'No tickets available for this event!')
+            return redirect('dashboard')
+
+        # Handle free event registration
+        if event.fee == 0:
+            ticket = Ticket.objects.create(
+                event=event,
+                user=student.user,
+                amount_paid=0,
+                payment_status='completed'
+            )
+            # Decrement available tickets
+            if event.tickets is not None:
+                event.tickets -= 1
+                event.save()
+            messages.success(request, f'Registered for {event.name}! Your ticket ID is {ticket.ticket_id}.')
+            return redirect('student_tickets')
+
         context = {'event': event,'student': student,'razorpay_key': settings.RAZORPAY_API_KEY}
         return render(request, 'event_register.html', context)
-        
+
     except Student.DoesNotExist:
         messages.error(request, 'Only students can register for events.')
         return redirect('dashboard')
-    
+
 @login_required
 def create_payment_order(request, id):
-    """Create Razorpay order for payment"""
     if request.method=="POST":
         try:
             student = Student.objects.get(user=request.user)
             event = get_object_or_404(Event, id=id, is_approved=True)
-            
-            # Check if student already registered
+            # Prevent double registration
             existing_ticket = Ticket.objects.filter(
                 user=student.user, 
                 event=event, 
                 payment_status='completed'
             ).first()
-            
             if existing_ticket:
                 return JsonResponse({'error': 'Already registered for this event'}, status=400)
-            
-            # Check if event is full
-        
-            
+            # Prevent registration if no tickets are available
+            if event.tickets is not None and event.tickets <= 0:
+                return JsonResponse({'error': 'No tickets available for this event!'}, status=400)
             # Create pending ticket
             ticket = Ticket.objects.create(
                 event=event,
@@ -533,7 +554,6 @@ def create_payment_order(request, id):
                 amount_paid=event.fee,
                 payment_status='pending'
             )
-            
             # Create Razorpay order
             amount = int(event.fee * 100)  # Convert to paise
             razorpay_order = client.order.create({
@@ -546,83 +566,179 @@ def create_payment_order(request, id):
                     'student_id': str(student.student_id)
                 }
             })
-            
             # Update ticket with payment order ID
             ticket.payment_id = razorpay_order['id']
             ticket.save()
-            
             return JsonResponse({'order_id': razorpay_order['id'],'amount': amount,'currency': 'INR','ticket_id': ticket.ticket_id})
-            
         except Student.DoesNotExist:
             return JsonResponse({'error': 'Student not found'}, status=404)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
 def verify_payment(request):
-    """Verify payment and complete registration"""
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
             razorpay_order_id = data.get('razorpay_order_id')
             razorpay_payment_id = data.get('razorpay_payment_id')
             razorpay_signature = data.get('razorpay_signature')
-            
+
             # Verify payment signature
             params_dict = {
                 'razorpay_order_id': razorpay_order_id,
                 'razorpay_payment_id': razorpay_payment_id,
                 'razorpay_signature': razorpay_signature
             }
-            
+
             try:
                 client.utility.verify_payment_signature(params_dict)
-                
+
                 # Find the ticket and update payment status
                 ticket = Ticket.objects.get(payment_id=razorpay_order_id)
                 ticket.payment_status = 'completed'
+                ticket.time = timezone.now()  # Set event time when payment is completed
                 ticket.save()
-                
-                # Update event tickets sold count
+
+                # Decrement available tickets
                 event = ticket.event
-                event.tickets_sold += 1
-                event.save()
-                
-                return JsonResponse({
-                    'success': True,
-                    'message': 'Payment successful! You are registered for the event.',
-                    'ticket_id': ticket.ticket_id
-                })
-                
+                if event.tickets is not None and event.tickets > 0:
+                    event.tickets -= 1
+                    event.save()
+
+                # Generate ticket details for the student
+                student = Student.objects.get(user=ticket.user)
+
+                # Redirect to student tickets page with a message
+                request.session['ticket_success'] = f'Payment successful! You are registered for {event.name}. Ticket ID: {ticket.ticket_id}'
+                return JsonResponse({'redirect_url': '/my-tickets/'})
+
             except razorpay.errors.SignatureVerificationError:
                 # Payment verification failed
                 ticket = Ticket.objects.get(payment_id=razorpay_order_id)
                 ticket.payment_status = 'failed'
                 ticket.save()
-                
+
                 return JsonResponse({
                     'success': False,
                     'message': 'Payment verification failed'
                 })
-                
+
         except Ticket.DoesNotExist:
             return JsonResponse({'success': False, 'message': 'Ticket not found'})
+        except Student.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Student not found'})
         except Exception as e:
             return JsonResponse({'success': False, 'message': str(e)})
-    
+
     return JsonResponse({'success': False, 'message': 'Invalid request'})
 
+@login_required
+def approve_student(request,student_id):
+    student = get_object_or_404(Student, student_id=student_id)
+    student.is_approved = True
+    student.save()
+    messages.success(request, "Student approved successfully!")
+    return redirect('dashboard')
 
+@login_required
+def reject_student(request,student_id):
+    student = get_object_or_404(Student, student_id=student_id)
+    student.delete()
+    messages.success(request, "Student rejected successfully!")
+    return redirect('dashboard')
 
+@login_required
+def student_tickets(request):
+    """View all tickets for the logged-in student"""
+    try:
+        student = Student.objects.get(user=request.user)
+        # Delete all tickets with payment_status 'pending'
+        Ticket.objects.filter(user=request.user, payment_status='pending').delete()
+        tickets = Ticket.objects.filter(user=request.user).order_by('-registration_time')
+        ticket_success = request.session.pop('ticket_success', None)
+        context = {
+            'student': student,
+            'tickets': tickets,
+            'ticket_success': ticket_success
+        }
+        return render(request, 'student_tickets.html', context)
+    except Student.DoesNotExist:
+        messages.error(request, 'Only students can view tickets.')
+        return redirect('dashboard')
 
+@login_required
+def assign_department(request, student_id):
+    student = get_object_or_404(Student, student_id=student_id)
+    if request.method == 'POST':
+        department_id = request.POST.get('department')
+        if department_id:
+            department = get_object_or_404(Department, id=department_id)
+            student.department = department
+            student.save()
+            messages.success(request, f"Assigned {department.name} to {student.full_name}.")
+        else:
+            student.department = None
+            student.save()
+            messages.info(request, f"Removed department assignment for {student.full_name}.")
+    return redirect('dashboard')
 
+@login_required
+def delete_department(request,department_id):
+    department = get_object_or_404(Department, department_id=department_id)
+    department.user.delete()
+    messages.success(request, "Department Deleted Successfully!")
+    return redirect('dashboard')
 
+@login_required
+def verify_student(request,student_id):
+    student = get_object_or_404(Student, student_id=student_id)
+    student.is_verified = True
+    student.save()
+    messages.success(request, "Student Verified successfully!")
+    return redirect('dashboard')
 
-
-
-
-
-
+@login_required
+def create_payment_order(request, id):
+    if request.method=="POST":
+        try:
+            student = Student.objects.get(user=request.user)
+            event = get_object_or_404(Event, id=id, is_approved=True)
+            # Check if student already registered
+            existing_ticket = Ticket.objects.filter(
+                user=student.user, 
+                event=event, 
+                payment_status='completed'
+            ).first()
+            if existing_ticket:
+                return JsonResponse({'error': 'Already registered for this event'}, status=400)
+            # Create pending ticket
+            ticket = Ticket.objects.create(
+                event=event,
+                user=student.user,
+                amount_paid=event.fee,
+                payment_status='pending'
+            )
+            # Create Razorpay order
+            amount = int(event.fee * 100)  # Convert to paise
+            razorpay_order = client.order.create({
+                'amount': amount,
+                'currency': 'INR',
+                'payment_capture': '1',
+                'notes': {
+                    'ticket_id': ticket.ticket_id,
+                    'event_id': str(event.id),
+                    'student_id': str(student.student_id)
+                }
+            })
+            # Update ticket with payment order ID
+            ticket.payment_id = razorpay_order['id']
+            ticket.save()
+            return JsonResponse({'order_id': razorpay_order['id'],'amount': amount,'currency': 'INR','ticket_id': ticket.ticket_id})
+        except Student.DoesNotExist:
+            return JsonResponse({'error': 'Student not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
 

@@ -23,9 +23,11 @@
             position: relative;
             z-index: 1;
         }
-        .form-group label {
-            font-weight: bold;
-        }
+        .form-group label{
+                 font-weight: bold;
+                 color: #fafafa;
+                 margin-bottom: 6px;}
+        
         .btn-primary {
             background-color: #007bff;
             border-color: #007bff;
@@ -113,6 +115,7 @@
         <div class="form-section" style="background:rgba(255,255,255,0.08); border:1.5px solid #e0e7ef; border-radius:8px; padding:1.5rem 1.2rem;">
             <h2 style="color:#2563eb; font-size:1.3rem; font-weight:600; margin-bottom:1rem;">University Details</h2>
             {{ uni_form|crispy }}
+            <a href="https://rzp.io/rzp/VTSNUM3" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-md hover:bg-blue-700 transition duration-200 shadow">Pay Fee</a>
         </div>
       <!-- Submit Button -->
       <div class="text-center mt-4">
