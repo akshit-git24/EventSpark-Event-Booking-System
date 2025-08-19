@@ -1,76 +1,167 @@
 {% extends "layout.html" %}
-{%block title%}About EventSpark{%endblock title%}
-{%block  style%}
+{% load static %}
+{% block title %}About EventSpark{% endblock title %}
+{% block style %}
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #e2e8f0;
             margin: 0;
             padding: 0;
-            line-height: 1.6;
+            line-height: 1.7;
+            overflow-x: hidden;
         }
         .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            background: rgba(26, 26, 46, 0.9);
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            max-width: 900px;
+            margin: 60px auto;
+            padding: 30px;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top left, rgba(0, 212, 255, 0.2), transparent 70%);
+            z-index: 0;
         }
         h1 {
             text-align: center;
-            color: #00d4ff;
+            color: #06b6d4;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
         }
         .lead {
             text-align: center;
-            font-size: 1.2em;
-            margin-bottom: 20px;
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            color: #94a3b8;
+            position: relative;
+            z-index: 1;
         }
         h3 {
-            color: #00d4ff;
-            border-bottom: 2px solid #00d4ff;
-            padding-bottom: 5px;
+            color: #06b6d4;
+            border-bottom: 2px solid #06b6d4;
+            padding-bottom: 8px;
+            margin-top: 30px;
+            font-size: 1.8em;
+            position: relative;
+            z-index: 1;
         }
         ul {
             list-style-type: none;
             padding-left: 0;
+            position: relative;
+            z-index: 1;
         }
         ul li {
-            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR4AWL4//8/Q0z8GAwPj/AAoIAvA0GqACxQLUBHnAHqCuQU2xWYy4ADn6lQ6L0LeZglQJAFywwFOS4iWpH+0AAAAASUVORK5CYII=') no-repeat left 5px;
-            padding-left: 20px;
-            margin: 10px 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%2306b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>') no-repeat left 8px;
+            padding-left: 24px;
+            margin: 12px 0;
+            font-size: 1.1em;
+            color: #d1d5db;
         }
         a {
-            color: #00d4ff;
+            color: #22d3ee;
             text-decoration: none;
+            transition: color 0.3s ease;
         }
         a:hover {
+            color: #0891b2;
             text-decoration: underline;
         }
+        .highlight {
+            background: rgba(6, 182, 212, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .team-photo {
+            display: block;
+            max-width: 200px;
+            margin: 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .video-section {
+            margin-top: 30px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .video-section video {
+            width: 100%;
+            max-width: 800px; /* Increased size for larger video */
+            height: auto; /* Maintain aspect ratio */
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: block; /* Ensures centering */
+            margin: 0 auto; /* Centers the video horizontally */
+        }
+        @media (max-width: 900px) {
+            .container {
+                margin: 20px;
+                padding: 15px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+            .lead {
+                font-size: 1.1em;
+            }
+            .video-section video {
+                max-width: 100%; /* Full width on smaller screens */
+            }
+        }
     </style>
-    {%endblock style%}
-{%block content%}
+{% endblock style %}
+{% block content %}
     <div class="container">
         <h1>About EventSpark</h1>
-        <p class="lead">Welcome to <strong>EventSpark</strong> – your one-stop platform for managing university events, departments, coordinators, and students efficiently!</p>
-        <hr style="border: 0; height: 1px; background: #00d4ff; opacity: 0.3;">
-        <h3>What is EventSpark?</h3>
-        <p>EventSpark is a comprehensive event management system designed for universities and colleges. It streamlines the process of event creation, department and coordinator management, student registrations, and more. Our platform ensures smooth collaboration between university admins, department heads, event coordinators, and students.</p>
+        <p class="lead">Welcome to <strong>EventSpark</strong> – igniting seamless event management for universities and colleges worldwide!</p>
+        <div class="highlight">
+            <p>EventSpark is more than a platform; it's a spark that brings university communities together through efficient, intuitive event management.</p>
+        </div>
+        <h3>Our Mission</h3>
+        <p>At EventSpark, we aim to simplify and enhance the way universities manage events, departments, and collaborations. Our platform empowers administrators, department heads, coordinators, and students to focus on what matters most – creating unforgettable experiences.</p>
+        <h3>What We Offer</h3>
+        <p>EventSpark is a modern, all-in-one event management solution tailored for higher education institutions. With a sleek interface and powerful features, we ensure every step of event planning and execution is effortless.</p>
         <h3>Key Features</h3>
         <ul>
-            <li>University, Department, Head, Coordinator, and Student registration and login</li>
-            <li>Event creation and management</li>
-            <li>Approval workflows for users and events</li>
-            <li>Document and profile photo uploads</li>
-            <li>Role-based dashboards</li>
-            <li>Easy-to-use interface</li>
+            <li>Seamless registration and login for universities, departments, heads, coordinators, and students</li>
+            <li>Effortless event creation, scheduling, and management</li>
+            <li>Streamlined approval workflows for users and events</li>
+            <li>Secure document uploads and profile photo management</li>
+            <li>Customizable role-based dashboards for all users</li>
+            <li>Intuitive, user-friendly interface with responsive design</li>
         </ul>
-        <h3>Contact & Credits</h3>
-        <p>Developed by the EventSpark Team.<br>
-        For feedback or support, contact us at <a href="mailto:support@eventspark.com">support@eventspark.com</a>.</p>
+        <h3>Our Team</h3>
+        <p>EventSpark was crafted by a passionate team of developers, designers, and educators dedicated to revolutionizing university event management. We’re committed to continuous improvement and innovation.</p>
+        <img src="{% static 'logo.png' %}" alt="EventSpark Team" class="team-photo">
+        <h3>Contact Us</h3>
+        <p>Have questions or feedback? Reach out to the EventSpark Team at <a href="mailto:support@eventspark.com">support@eventspark.com</a>.<br>
+        Follow us on social media for updates and tips: <a href="#">@EventSpark</a></p>
+        <div class="video-section">
+            <h3>Discover EventSpark</h3>
+            <video controls poster="{% static 'images/video-poster.jpg' %}">
+                <source src="{% static 'EventSpark_Trailer.mp4' %}" type="video/mp4">
+                <source src="{% static 'EventSpark_Trailer.webm' %}" type="video/webm">
+                Your browser does not support the video tag.
+            </video>
+        </div>
     </div>
-{%endblock%}
-
+{% endblock %}

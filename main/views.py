@@ -20,7 +20,7 @@ from datetime import datetime
 from django.utils import timezone
 
 client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET))
-# Create your views here.
+
 def homepage(request):
     return render(request,'home.html')
 
@@ -481,7 +481,6 @@ def register_event(request, id):
         student = Student.objects.get(user=request.user)
         event = get_object_or_404(Event, id=id, is_approved=True)
 
-        # Prevent double registration
         existing_ticket = Ticket.objects.filter(
             user=student.user, event=event, payment_status='completed'
         ).first()
@@ -489,12 +488,12 @@ def register_event(request, id):
             messages.warning(request, 'You are already registered for this event!')
             return redirect('dashboard')
 
-        # Prevent registration if no tickets are available
+        
         if event.tickets is not None and event.tickets <= 0:
             messages.error(request, 'No tickets available for this event!')
             return redirect('dashboard')
 
-        # Handle free event registration
+       
         if event.fee == 0:
             ticket = Ticket.objects.create(
                 event=event,
@@ -502,7 +501,7 @@ def register_event(request, id):
                 amount_paid=0,
                 payment_status='completed'
             )
-            # Decrement available tickets
+            
             if event.tickets is not None:
                 event.tickets -= 1
                 event.save()
@@ -522,7 +521,7 @@ def create_payment_order(request, id):
         try:
             student = Student.objects.get(user=request.user)
             event = get_object_or_404(Event, id=id, is_approved=True)
-            # Prevent double registration
+            
             existing_ticket = Ticket.objects.filter(
                 user=student.user, 
                 event=event, 
@@ -530,7 +529,7 @@ def create_payment_order(request, id):
             ).first()
             if existing_ticket:
                 return JsonResponse({'error': 'Already registered for this event'}, status=400)
-            # Prevent registration if no tickets are available
+           
             if event.tickets is not None and event.tickets <= 0:
                 return JsonResponse({'error': 'No tickets available for this event!'}, status=400)
             # Create pending ticket
@@ -540,8 +539,8 @@ def create_payment_order(request, id):
                 amount_paid=event.fee,
                 payment_status='pending'
             )
-            # Create Razorpay order
-            amount = int(event.fee * 100)  # Convert to paise
+            
+            amount = int(event.fee * 100)
             razorpay_order = client.order.create({
                 'amount': amount,
                 'currency': 'INR',
@@ -552,7 +551,7 @@ def create_payment_order(request, id):
                     'student_id': str(student.student_id)
                 }
             })
-            # Update ticket with payment order ID
+           
             ticket.payment_id = razorpay_order['id']
             ticket.save()
             return JsonResponse({'order_id': razorpay_order['id'],'amount': amount,'currency': 'INR','ticket_id': ticket.ticket_id})
@@ -571,7 +570,6 @@ def verify_payment(request):
             razorpay_payment_id = data.get('razorpay_payment_id')
             razorpay_signature = data.get('razorpay_signature')
 
-            # Verify payment signature
             params_dict = {
                 'razorpay_order_id': razorpay_order_id,
                 'razorpay_payment_id': razorpay_payment_id,
@@ -581,27 +579,27 @@ def verify_payment(request):
             try:
                 client.utility.verify_payment_signature(params_dict)
 
-                # Find the ticket and update payment status
+                
                 ticket = Ticket.objects.get(payment_id=razorpay_order_id)
                 ticket.payment_status = 'completed'
-                ticket.time = timezone.now()  # Set event time when payment is completed
+                ticket.time = timezone.now() 
                 ticket.save()
 
-                # Decrement available tickets
+                
                 event = ticket.event
                 if event.tickets is not None and event.tickets > 0:
                     event.tickets -= 1
                     event.save()
 
-                # Generate ticket details for the student
+               
                 student = Student.objects.get(user=ticket.user)
 
-                # Redirect to student tickets page with a message
+                
                 request.session['ticket_success'] = f'Payment successful! You are registered for {event.name}. Ticket ID: {ticket.ticket_id}'
                 return JsonResponse({'redirect_url': '/my-tickets/'})
 
             except razorpay.errors.SignatureVerificationError:
-                # Payment verification failed
+              
                 ticket = Ticket.objects.get(payment_id=razorpay_order_id)
                 ticket.payment_status = 'failed'
                 ticket.save()
@@ -640,7 +638,7 @@ def student_tickets(request):
     """View all tickets for the logged-in student"""
     try:
         student = Student.objects.get(user=request.user)
-        # Delete all tickets with payment_status 'pending'
+       
         Ticket.objects.filter(user=request.user, payment_status='pending').delete()
         tickets = Ticket.objects.filter(user=request.user).order_by('-registration_time')
         ticket_success = request.session.pop('ticket_success', None)
@@ -691,7 +689,7 @@ def create_payment_order(request, id):
         try:
             student = Student.objects.get(user=request.user)
             event = get_object_or_404(Event, id=id, is_approved=True)
-            # Check if student already registered
+           
             existing_ticket = Ticket.objects.filter(
                 user=student.user, 
                 event=event, 
@@ -699,15 +697,15 @@ def create_payment_order(request, id):
             ).first()
             if existing_ticket:
                 return JsonResponse({'error': 'Already registered for this event'}, status=400)
-            # Create pending ticket
+           
             ticket = Ticket.objects.create(
                 event=event,
                 user=student.user,
                 amount_paid=event.fee,
                 payment_status='pending'
             )
-            # Create Razorpay order
-            amount = int(event.fee * 100)  # Convert to paise
+            
+            amount = int(event.fee * 100)  
             razorpay_order = client.order.create({
                 'amount': amount,
                 'currency': 'INR',
@@ -718,7 +716,7 @@ def create_payment_order(request, id):
                     'student_id': str(student.student_id)
                 }
             })
-            # Update ticket with payment order ID
+           
             ticket.payment_id = razorpay_order['id']
             ticket.save()
             return JsonResponse({'order_id': razorpay_order['id'],'amount': amount,'currency': 'INR','ticket_id': ticket.ticket_id})

@@ -1,4 +1,4 @@
-# TechSpark⚡-- 🎓 University Event Management System 
+# EventSpark⚡-- 🎓 University Event Management System 
 
 A full-stack event management platform built for universities to manage their internal events, student registrations, and department workflows — complete with Razorpay integration and a multi-role approval system.
 
