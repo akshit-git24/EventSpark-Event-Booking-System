@@ -521,36 +521,16 @@ def create_payment_order(request, id):
         try:
             student = Student.objects.get(user=request.user)
             event = get_object_or_404(Event, id=id, is_approved=True)
-            
-            existing_ticket = Ticket.objects.filter(
-                user=student.user, 
-                event=event, 
-                payment_status='completed'
-            ).first()
+            existing_ticket = Ticket.objects.filter(user=student.user,event=event,payment_status='completed').first()
             if existing_ticket:
                 return JsonResponse({'error': 'Already registered for this event'}, status=400)
            
             if event.tickets is not None and event.tickets <= 0:
                 return JsonResponse({'error': 'No tickets available for this event!'}, status=400)
-            # Create pending ticket
-            ticket = Ticket.objects.create(
-                event=event,
-                user=student.user,
-                amount_paid=event.fee,
-                payment_status='pending'
-            )
-            
+                
+            ticket = Ticket.objects.create(event=event,user=student.user,amount_paid=event.fee,payment_status='pending')
             amount = int(event.fee * 100)
-            razorpay_order = client.order.create({
-                'amount': amount,
-                'currency': 'INR',
-                'payment_capture': '1',
-                'notes': {
-                    'ticket_id': ticket.ticket_id,
-                    'event_id': str(event.id),
-                    'student_id': str(student.student_id)
-                }
-            })
+            razorpay_order = client.order.create({'amount': amount,'currency': 'INR','payment_capture': '1','notes': {'ticket_id': ticket.ticket_id,'event_id': str(event.id),'student_id': str(student.student_id)}})
            
             ticket.payment_id = razorpay_order['id']
             ticket.save()
