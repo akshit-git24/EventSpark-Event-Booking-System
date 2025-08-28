@@ -662,57 +662,16 @@ def verify_student(request,student_id):
     student.save()
     messages.success(request, "Student Verified successfully!")
     return redirect('dashboard')
-
+    
 @login_required
-def create_payment_order(request, id):
-    if request.method=="POST":
-        try:
-            student = Student.objects.get(user=request.user)
-            event = get_object_or_404(Event, id=id, is_approved=True)
-           
-            existing_ticket = Ticket.objects.filter(
-                user=student.user, 
-                event=event, 
-                payment_status='completed'
-            ).first()
-            if existing_ticket:
-                return JsonResponse({'error': 'Already registered for this event'}, status=400)
-           
-            ticket = Ticket.objects.create(
-                event=event,
-                user=student.user,
-                amount_paid=event.fee,
-                payment_status='pending'
-            )
-            
-            amount = int(event.fee * 100)  
-            razorpay_order = client.order.create({
-                'amount': amount,
-                'currency': 'INR',
-                'payment_capture': '1',
-                'notes': {
-                    'ticket_id': ticket.ticket_id,
-                    'event_id': str(event.id),
-                    'student_id': str(student.student_id)
-                }
-            })
-           
-            ticket.payment_id = razorpay_order['id']
-            ticket.save()
-            return JsonResponse({'order_id': razorpay_order['id'],'amount': amount,'currency': 'INR','ticket_id': ticket.ticket_id})
-        except Student.DoesNotExist:
-            return JsonResponse({'error': 'Student not found'}, status=404)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    return JsonResponse({'error': 'Invalid request method'}, status=405)
-
 def rusticate(request,student_id):
     student=get_object_or_404(Student,student_id=student_id)
     student.is_rusticated=True
     student.save()
     messages.success(request, "Student Rusticated successfully!")
     return redirect('dashboard')
-
+    
+@login_required
 def remove_rusticate(request,student_id):
     student=get_object_or_404(Student,student_id=student_id)
     student.is_rusticated=False
